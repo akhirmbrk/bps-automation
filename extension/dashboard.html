@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://community.bps.go.id https://mitra-api.bps.go.id https://simpeg.bps.go.id; connect-src 'self' https://fasih-sm.bps.go.id https://*.bps.go.id;">
+  <title>BPS Automation v5.1.0</title>
+  <link href="main.css" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+    <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="sidebar-brand">
+    <img src="icons/icon128.png" alt="BPS Logo" class="brand-logo"/>
+    <div class="brand-info">
+      <span class="brand-text">BPS AUTOMATION</span>
+      <span class="app-version">v5.1.0</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <!-- FASIH Menu Group -->
+    <div class="nav-group">
+      <div class="nav-group-title">📊 FASIH</div>
+      <a href="#" class="nav-item active" data-page="dashboard" data-group="fasih">
+        <span class="nav-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </span>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" data-page="history" data-group="fasih">
+        <span class="nav-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+        <span>Scraping History</span>
+      </a>
+      <a href="#" class="nav-item" data-page="allocation" data-group="fasih">
+        <span class="nav-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <span>User Allocation</span>
+      </a>
+    </div>
+    
+    <!-- Manajemen Mitra Menu Group -->
+    <div class="nav-group">
+      <div class="nav-group-title">👥 MANAJEMEN MITRA</div>
+      <a href="#" class="nav-item" data-page="dashboard-mitra" data-group="mitra">
+        <span class="nav-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <span>Dashboard Mitra</span>
+      </a>
+      <a href="#" class="nav-item" data-page="scrapping-mitra" data-group="mitra">
+        <span class="nav-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </span>
+        <span>Scrapping</span>
+      </a>
+      <a href="#" class="nav-item" data-page="seleksi-mitra" data-group="mitra">
+        <span class="nav-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </span>
+        <span>Seleksi Mitra</span>
+      </a>
+      <a href="#" class="nav-item" data-page="akun-mitra" data-group="mitra">
+        <span class="nav-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        </span>
+        <span>Akun Mitra</span>
+      </a>
+    </div>
+    
+    <!-- Settings -->
+    <div class="nav-group">
+      <div class="nav-group-title">⚙️ PENGATURAN</div>
+      <a href="#" class="nav-item" data-page="settings" data-group="settings">
+        <span class="nav-icon">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </span>
+        <span>API Settings</span>
+      </a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <img src="icons/profile.png" alt="User" class="user-avatar" id="userAvatarSidebar"/>
+      <div class="user-details">
+        <p class="user-name" id="userFullnameSidebar">Loading...</p>
+        <p class="user-role" id="userRoleSidebar">-</p>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+  <!-- Sidebar overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 class="page-title" id="pageTitle">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Dashboard
+      </h1>
+    </div>
+    <div class="topbar-right">
+      <button id="themeToggle" class="topbar-btn" title="Toggle Theme">
+        <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button id="checkSessionBtn" class="topbar-btn" title="Check Session">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </button>
+      <button id="reloadSessionBtn" class="topbar-btn" title="Reload Session">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== FASIH PAGES ==================== -->
+  
+  <!-- Dashboard Page -->
+  <div class="page active" id="page-dashboard">
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <span class="stat-icon">
+          <svg class="icon icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </span>
+        <div class="stat-info">
+          <span class="stat-value" id="statSurveys">0</span>
+          <span class="stat-label">Total Survei</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">
+          <svg class="icon icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </span>
+        <div class="stat-info">
+          <span class="stat-value" id="statRecords">0</span>
+          <span class="stat-label">Total Records</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">
+          <svg class="icon icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+        <div class="stat-info">
+          <span class="stat-value" id="statTime">--:--</span>
+          <span class="stat-label">Estimated Time</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">
+          <svg class="icon icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        </span>
+        <div class="stat-info">
+          <span class="stat-value" id="statHistory">0</span>
+          <span class="stat-label">Riwayat</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card extraction-card">
+      <div class="card-header">
+        <h2>Ekstraksi Data FASIH</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="surveySelect">Pilih Survei:</label>
+            <select id="surveySelect" class="form-select">
+              <option value="">-- Pilih Survei --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mode Ekstraksi:</label>
+            <div class="mode-buttons">
+              <button class="mode-btn active" data-mode="basic">Basic</button>
+              <button class="mode-btn" data-mode="ekstra">Ekstra</button>
+              <button class="mode-btn" data-mode="detail">Detail</button>
+            </div>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button id="startBtn" class="btn btn-primary">Mulai Ekstraksi</button>
+          <button id="stopBtn" class="btn btn-danger" disabled>Berhenti</button>
+          <button id="downloadCsvBtn" class="btn btn-success" disabled>Download CSV</button>
+          <button id="downloadExcelBtn" class="btn btn-info" disabled>Download Excel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card progress-card">
+      <div class="card-header">
+        <h2>Progress</h2>
+        <span class="progress-stats" id="progressStats">0 baris terkumpul</span>
+      </div>
+      <div class="card-body">
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar" id="progressBar">
+            <span class="progress-text" id="progressText">0%</span>
+          </div>
+        </div>
+        <div class="terminal-wrapper" id="terminalWrapper">
+          <div class="terminal-toolbar">
+            <button id="clearLogBtn" class="toolbar-btn">Clear</button>
+            <button id="copyLogBtn" class="toolbar-btn">Copy</button>
+            <button id="toggleLogBtn" class="toolbar-btn">Hide</button>
+          </div>
+          <div class="terminal" id="logTerminal">
+            <div class="log-line log-info"><span class="timestamp">[System]</span> Initializing...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Page -->
+  <div class="page" id="page-history">
+    <div class="card">
+      <div class="card-header">
+        <button id="clearHistoryBtn" class="btn btn-danger btn-sm">Clear History</button>
+      </div>
+      <div class="card-body">
+        <div id="historyWarning" class="history-warning">
+          <span>File akan disimpan selama <strong>10 menit</strong> setelah scraping selesai.</span>
+        </div>
+        <div class="history-list" id="historyList">
+          <p class="text-center text-muted">Belum ada riwayat scraping.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Allocation Page -->
+  <div class="page" id="page-allocation">
+    <div class="card">
+      <div class="card-header">
+        <h2>User Allocation By Selection</h2>
+        <button id="downloadTemplateBtn" class="btn btn-info btn-sm">Download Template</button>
+      </div>
+      <div class="card-body">
+        <div class="upload-area" id="uploadArea">
+          <p>Drag & drop file Excel di sini atau</p>
+          <label class="btn btn-primary" for="allocationFileInput">Browse File</label>
+          <input type="file" id="allocationFileInput" accept=".xlsx,.xls" style="display:none"/>
+        </div>
+        <div class="allocation-config" id="allocationConfig" style="display:none;">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="allocationSurveySelect">Pilih Survei:</label>
+              <select id="allocationSurveySelect" class="form-select"><option value="">-- Pilih Survei --</option></select>
+            </div>
+            <div class="form-group">
+              <label for="allocationPeriodSelect">Pilih Periode:</label>
+              <select id="allocationPeriodSelect" class="form-select"><option value="">-- Pilih Periode --</option></select>
+            </div>
+            <div class="form-group">
+              <label for="allocationRoleSelect">Pilih Role:</label>
+              <select id="allocationRoleSelect" class="form-select"><option value="">-- Pilih Role --</option></select>
+            </div>
+          </div>
+          <div class="allocation-options">
+            <label class="checkbox-label"><input type="checkbox" id="allocationOverwrite"/> Overwrite</label>
+            <label class="checkbox-label"><input type="checkbox" id="allocationDirectAssign" checked/> Direct Assign</label>
+            <div class="form-group" style="max-width:200px;">
+              <label for="allocationRateLimit">Rate Limit (ms):</label>
+              <input type="number" id="allocationRateLimit" class="form-input" value="500" min="100" max="5000"/>
+            </div>
+          </div>
+          <div class="preview-section">
+            <h3>Preview Data (<span id="previewCount">0</span> baris)</h3>
+            <div class="table-wrapper">
+              <table class="preview-table" id="previewTable">
+                <thead><tr><th>PROVINSI</th><th>KABUPATEN</th><th>KECAMATAN</th><th>DESA</th><th>SLS</th><th>SUBSLS</th><th>Email</th></tr></thead>
+                <tbody id="previewTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button id="allocateBtn" class="btn btn-primary" disabled>Allocate Users</button>
+            <button id="clearAllocationBtn" class="btn btn-danger">Clear</button>
+          </div>
+        </div>
+        <div class="allocation-log" id="allocationLog" style="display:none;">
+          <h3>Allocation Progress</h3>
+          <div class="progress-bar-wrapper"><div class="progress-bar" id="allocationProgressBar"><span class="progress-text" id="allocationProgressText">0%</span></div></div>
+          <div class="terminal" id="allocationTerminal"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MANAJEMEN MITRA PAGES ==================== -->
+  
+  <!-- Dashboard Mitra Page -->
+  <div class="page" id="page-dashboard-mitra">
+    <div class="stats-grid" id="mitraStatsGrid">
+      <div class="stat-card">
+        <span class="stat-icon">👥</span>
+        <div class="stat-info">
+          <span class="stat-value" id="statMitraTotal">0</span>
+          <span class="stat-label">Total Mitra KEPKA</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">✅</span>
+        <div class="stat-info">
+          <span class="stat-value" id="statMitraDiterima">0</span>
+          <span class="stat-label">Diterima</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">📋</span>
+        <div class="stat-info">
+          <span class="stat-value" id="statMitraSurvei">0</span>
+          <span class="stat-label">Survei Diikuti</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">📅</span>
+        <div class="stat-info">
+          <span class="stat-value" id="statMitraTahun">2026</span>
+          <span class="stat-label">Tahun Aktif</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Mitra KEPKA</h2>
+        <div class="header-actions">
+          <select id="mitraTahunSelect" class="form-select" style="width:100px;">
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+          </select>
+          <button id="loadMitraKepkaBtn" class="btn btn-primary btn-sm">Load Data</button>
+          <button id="downloadMitraCsvBtn" class="btn btn-success btn-sm" disabled>Download CSV</button>
+          <button id="downloadMitraExcelBtn" class="btn btn-info btn-sm" disabled>Download Excel</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="mitra-kepka-search">
+          <input type="text" id="mitraKepkaSearch" placeholder="🔍 Cari NIK, nama, email, posisi..."/>
+        </div>
+        <div class="action-buttons mb-3">
+          <button id="downloadAllDetailCsvBtn" class="btn btn-success btn-sm" disabled>📥 Download All Detail CSV</button>
+          <button id="downloadAllDetailExcelBtn" class="btn btn-info btn-sm" disabled>📥 Download All Detail Excel</button>
+        </div>
+        <div id="detailProgress" style="display:none; margin-bottom:12px; padding:12px; background:var(--bg-secondary); border-radius:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+            <span id="detailProgressText" style="font-size:0.85rem; font-weight:600;">Mengambil detail...</span>
+            <span id="detailProgressPercent" style="font-size:0.85rem; color:var(--primary);">0%</span>
+          </div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar" id="detailProgressBar" style="width:0%;">
+              <span class="progress-text" id="detailProgressBarText">0%</span>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="preview-table" id="mitraKepkaTable">
+            <thead>
+              <tr>
+                <th>NIK</th>
+                <th>Nama Lengkap</th>
+                <th>Email</th>
+                <th>Posisi</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="mitraKepkaTableBody">
+              <tr><td colspan="6" class="text-center text-muted">Klik "Load Data" untuk memuat daftar mitra KEPKA</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Riwayat Survei Mitra</h2>
+      </div>
+      <div class="card-body">
+        <div class="table-wrapper">
+          <table class="preview-table" id="mitraHistoryTable">
+            <thead>
+              <tr>
+                <th>Kode Survei</th>
+                <th>Nama Survei</th>
+                <th>Kegiatan</th>
+                <th>Posisi</th>
+                <th>Status</th>
+                <th>Lokasi</th>
+              </tr>
+            </thead>
+            <tbody id="mitraHistoryTableBody">
+              <tr><td colspan="6" class="text-center text-muted">Data akan muncul setelah memilih mitra</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scrapping Mitra Page -->
+  <div class="page" id="page-scrapping-mitra">
+    <div class="card">
+      <div class="card-header">
+        <h2>Scrapping Data Mitra</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="mitraSurveySelect">Pilih Survei:</label>
+            <select id="mitraSurveySelect" class="form-select form-select-searchable"><option value="">-- Pilih Survei --</option></select>
+          </div>
+          <div class="form-group">
+            <label for="mitraStatusKegiatanSelect">Status Kegiatan:</label>
+            <select id="mitraStatusKegiatanSelect" class="form-select">
+              <option value="0">Belum Mulai</option>
+              <option value="1" selected>Aktif</option>
+              <option value="2">Selesai</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="mitraKegiatanSelect">Pilih Kegiatan:</label>
+            <select id="mitraKegiatanSelect" class="form-select form-select-searchable"><option value="">-- Pilih Kegiatan --</option></select>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button id="loadMitraDataBtn" class="btn btn-primary">Load Data</button>
+          <button id="downloadMitraScrapCsvBtn" class="btn btn-success" disabled>Download CSV</button>
+          <button id="downloadMitraScrapExcelBtn" class="btn btn-info" disabled>Download Excel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Hasil Data Mitra</h2>
+        <span class="progress-stats" id="mitraScrapStats">0 records</span>
+      </div>
+      <div class="card-body">
+        <div class="table-wrapper">
+          <table class="preview-table" id="mitraScrapTable">
+            <thead>
+              <tr>
+                <th>NIK</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Posisi</th>
+                <th>Status</th>
+                <th>Alamat</th>
+              </tr>
+            </thead>
+            <tbody id="mitraScrapTableBody">
+              <tr><td colspan="6" class="text-center text-muted">Pilih survei dan kegiatan, lalu klik "Load Data"</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seleksi Mitra Page -->
+  <div class="page" id="page-seleksi-mitra">
+    <div class="card">
+      <div class="card-header">
+        <h2>Seleksi Mitra</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="seleksiSurveiSelect">Pilih Sensus/Survei:</label>
+            <select id="seleksiSurveiSelect" class="form-select form-select-searchable"><option value="">-- Pilih Survei --</option></select>
+          </div>
+          <div class="form-group">
+            <label for="seleksiStatusKegiatanSelect">Status Kegiatan:</label>
+            <select id="seleksiStatusKegiatanSelect" class="form-select">
+              <option value="0">Belum Mulai</option>
+              <option value="1" selected>Aktif</option>
+              <option value="2">Selesai</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="seleksiKegiatanSelect">Pilih Kegiatan:</label>
+            <select id="seleksiKegiatanSelect" class="form-select form-select-searchable"><option value="">-- Pilih Kegiatan --</option></select>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button id="loadSeleksiBtn" class="btn btn-primary">Load Data Seleksi</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Daftar Seleksi Mitra</h2>
+        <span class="progress-stats" id="seleksiStats">0 records</span>
+      </div>
+      <div class="card-body">
+        <div class="table-wrapper">
+          <table class="preview-table" id="seleksiTable">
+            <thead>
+              <tr>
+                <th>NIK</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Posisi</th>
+                <th>Status</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="seleksiTableBody">
+              <tr><td colspan="6" class="text-center text-muted">Pilih survei dan kegiatan, lalu klik "Load Data Seleksi"</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Akun Mitra Page -->
+  <div class="page" id="page-akun-mitra">
+    <div class="card">
+      <div class="card-header">
+        <h2>Akun Mitra</h2>
+        <div class="header-actions">
+          <button id="loadAkunMitraBtn" class="btn btn-primary btn-sm">Load Data</button>
+          <button id="downloadAkunCsvBtn" class="btn btn-success btn-sm" disabled>CSV</button>
+          <button id="downloadAkunExcelBtn" class="btn btn-info btn-sm" disabled>Excel</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="filter-row">
+          <div class="form-group search-group">
+            <label for="akunSearchInput">🔍 Pencarian Live:</label>
+            <input type="text" id="akunSearchInput" class="form-input" placeholder="Ketik untuk mencari username, nama, email, NIK..."/>
+          </div>
+        </div>
+        <div id="akunLoading" style="display:none; text-align:center; padding:20px;">
+          <div style="font-size:1.5rem; margin-bottom:8px;">⏳</div>
+          <p style="color:var(--text-secondary);">Memuat semua data akun mitra...</p>
+          <p style="font-size:0.8rem; color:var(--text-secondary);" id="akunLoadingStatus">Mohon tunggu</p>
+        </div>
+        <div class="table-wrapper">
+          <table class="preview-table" id="akunMitraTable">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Nama Lengkap</th>
+                <th>NIK</th>
+                <th>Status</th>
+                <th>Tanggal Daftar</th>
+              </tr>
+            </thead>
+            <tbody id="akunMitraTableBody">
+              <tr><td colspan="6" class="text-center text-muted">Klik "Load Data" untuk memuat daftar akun mitra</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-wrapper" id="akunMitraPagination">
+          <button id="prevPageBtn" class="btn btn-secondary btn-sm" disabled>Previous</button>
+          <span id="pageInfo" class="page-info">Page 1</span>
+          <button id="nextPageBtn" class="btn btn-secondary btn-sm" disabled>Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Page -->
+  <div class="page" id="page-settings">
+    <div class="card">
+      <div class="card-header"><h2>API Settings</h2></div>
+      <div class="card-body">
+        <div class="settings-form">
+          <div class="form-group">
+            <label for="apiBaseUrl">FASIH Base URL:</label>
+            <input type="text" id="apiBaseUrl" class="form-input" value="https://fasih-sm.bps.go.id"/>
+          </div>
+          <div class="form-group">
+            <label for="mitraApiBaseUrl">Mitra API Base URL:</label>
+            <input type="text" id="mitraApiBaseUrl" class="form-input" value="https://mitra-api.bps.go.id"/>
+          </div>
+          <div class="form-group">
+            <label for="mitraPenggunaApiBaseUrl">Mitra Pengguna API Base URL:</label>
+            <input type="text" id="mitraPenggunaApiBaseUrl" class="form-input" value="https://mitra-pengguna-api.bps.go.id"/>
+          </div>
+          <div class="form-group">
+            <label for="rateLimit">Rate Limit (ms):</label>
+            <input type="number" id="rateLimit" class="form-input" value="300" min="100" max="5000"/>
+          </div>
+          <div class="form-group">
+            <label for="detailRateLimit">Detail Rate Limit (ms):</label>
+            <input type="number" id="detailRateLimit" class="form-input" value="100" min="50" max="2000"/>
+          </div>
+          <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--border-color);"/>
+          <h3 style="font-size: 1rem; margin-bottom: 16px;">🔑 Mitra JWT Token (Manual Fallback)</h3>
+          <div class="form-group">
+            <label for="mitraJwtTokenInput">JWT Token:</label>
+            <textarea id="mitraJwtTokenInput" class="form-input" rows="3" placeholder="Paste JWT token dari DevTools > Network > Authorization header..."></textarea>
+            <small style="color: var(--text-secondary); display: block; margin-top: 4px;">
+              💡 Token otomatis di-capture dari manajemen-mitra.bps.go.id. Jika tidak, paste manual di sini.
+            </small>
+          </div>
+          <div class="form-group">
+            <label for="jwtStatus">Status:</label>
+            <span id="jwtStatus" style="font-size: 0.85rem; color: var(--text-secondary);">Belum ada token</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary" id="saveJwtBtn">💾 Simpan JWT Token</button>
+            <button class="btn btn-secondary" id="clearJwtBtn">🗑️ Hapus JWT Token</button>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary" id="saveSettingsBtn">Simpan Pengaturan</button>
+            <button class="btn btn-secondary" id="resetSettingsBtn">Reset Default</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>© 2026 BPS Automation — Made with ❤️ by BPS Kabupaten Kutai Kartanegara</p>
+  </footer>
+</main>
+
+<!-- Mitra Detail Modal -->
+<div class="detail-modal" id="mitraDetailModal">
+  <div class="detail-modal-content">
+    <div class="detail-modal-header">
+      <h3>Detail Mitra KEPKA</h3>
+      <button class="detail-modal-close">&times;</button>
+    </div>
+    <div class="detail-modal-body" id="mitraDetailBody"></div>
+  </div>
+</div>
+
+<!-- Session Toast Notification (Top-Right) -->
+<div class="session-toast" id="sessionToast">
+  <div class="session-toast-card">
+    <div class="session-toast-header">
+      <span>⚠️ Session Check</span>
+      <button class="session-toast-close" id="sessionToastClose">&times;</button>
+    </div>
+    <div class="session-toast-body" id="sessionToastContent"></div>
+    <div class="session-toast-footer">
+      <button class="btn btn-primary btn-sm" id="sessionToastOpenAll">Buka Semua Link</button>
+    </div>
+  </div>
+</div>
+
+<!-- Compact Floating Status Card (Top-Right) -->
+<div class="floating-status-card" id="floatingStatusCard" style="display:none;">
+  <button class="floating-status-close" id="floatingStatusClose">&times;</button>
+  <div class="floating-status-title" id="floatingStatusTitle">📡 Initialization</div>
+  <div class="floating-status-items" id="floatingStatusItems">
+    <div class="floating-status-item" id="step-init">
+      <span class="floating-status-icon">⚙️</span>
+      <span class="floating-status-name">Initializing...</span>
+    </div>
+    <div class="floating-status-item" id="step-auth">
+      <span class="floating-status-icon">🔐</span>
+      <span class="floating-status-name">Checking Login...</span>
+    </div>
+    <div class="floating-status-item" id="step-surveys">
+      <span class="floating-status-icon">📊</span>
+      <span class="floating-status-name">Loading Data...</span>
+    </div>
+  </div>
+</div>
+
+<!-- Local XLSX Library -->
+<script src="xlsx.full.min.js"></script>
+<!-- Refactored App (ES Module) -->
+<script type="module" src="src/app.js"></script>
+</body>
+</html>
