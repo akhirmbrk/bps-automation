@@ -1,0 +1,19 @@
+{
+  "name": "bps-automation",
+  "version": "5.1.0",
+  "description": "Chrome extension for FASIH BPS data extraction and Mitra management",
+  "private": true,
+  "scripts": {
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "format": "prettier --write \"**/*.{js,json,md,html,css}\"",
+    "format:check": "prettier --check \"**/*.{js,json,md,html,css}\""
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

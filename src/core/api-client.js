@@ -104,54 +104,57 @@ class ApiClient {
   }
 
   /**
+   * Validate and parse an HTTP response
+   * @param {Response} response - Fetch response
+   * @param {string} method - HTTP method
+   * @param {string} url - Request URL
+   * @param {string} label - Request label
+   * @returns {Promise<Object>} Parsed JSON data
+   */
+  async #handleResponse(response, method, url, label) {
+    const contentType = response.headers.get('content-type') || '';
+
+    // Guard: Check redirect to login
+    if (/oauth_login|login|oauth/.test(response.url)) {
+      Logger.warn('[ApiClient] Redirected to login — session may be expired');
+      throw new ApiError(401, 'Session expired - redirected to login', url);
+    }
+
+    // Guard: Check response is not HTML
+    if (contentType.includes('text/html')) {
+      Logger.warn('[ApiClient] Received HTML response instead of JSON');
+      throw new ApiError(401, 'Invalid response format - HTML received', url);
+    }
+
+    // Guard: Check response status
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      eventBus.emit('api:error', { method, url, status: response.status, error: text });
+      throw new ApiError(response.status, response.statusText, url);
+    }
+
+    // Guard: Validate content-type
+    if (!contentType.includes('application/json')) {
+      Logger.warn('[ApiClient] Response is not JSON, content-type:', contentType);
+      throw new ApiError(400, 'Invalid response format', url);
+    }
+
+    return response.json();
+  }
+
+  /**
    * Make a GET request
    * @param {string} url - Request URL
    * @param {string} [label=''] - Request label for logging
    * @returns {Promise<Object>} Response data
    */
   async get(url, label = '') {
-    console.warn('[ApiClient] GET request:', url, label);
     eventBus.emit('api:request', { method: 'GET', url, label });
-    
+
     try {
       const headers = await this.getAuthHeaders();
-      console.warn('[ApiClient] Headers:', headers);
-      const response = await fetch(url, {
-        method: 'GET',
-        credentials: 'include',
-        headers,
-        cache: 'no-store',
-        redirect: 'follow'
-      });
-
-      // Check if redirected to login page (302 redirect to HTML)
-      const finalUrl = response.url;
-      const contentType = response.headers.get('content-type') || '';
-      
-      if (finalUrl.includes('oauth_login') || finalUrl.includes('login') || finalUrl.includes('oauth')) {
-        Logger.warn('[ApiClient] Redirected to login page - session may be expired');
-        throw new ApiError(401, 'Session expired - redirected to login', url);
-      }
-
-      // Check if response is HTML instead of JSON
-      if (contentType.includes('text/html')) {
-        Logger.warn('[ApiClient] Received HTML response instead of JSON');
-        throw new ApiError(401, 'Invalid response format - HTML received', url);
-      }
-
-      if (!response.ok) {
-        const text = await response.text().catch(() => '');
-        eventBus.emit('api:error', { method: 'GET', url, status: response.status, error: text });
-        throw new ApiError(response.status, response.statusText, url);
-      }
-
-      // Validate content-type before parsing JSON
-      if (!contentType.includes('application/json')) {
-        Logger.warn('[ApiClient] Response is not JSON, content-type:', contentType);
-        throw new ApiError(400, 'Invalid response format', url);
-      }
-
-      const data = await response.json();
+      const response = await fetch(url, { method: 'GET', credentials: 'include', headers, cache: 'no-store', redirect: 'follow' });
+      const data = await this.#handleResponse(response, 'GET', url, label);
       eventBus.emit('api:success', { method: 'GET', url, label });
       return data;
     } catch (err) {
@@ -169,7 +172,7 @@ class ApiClient {
    */
   async post(url, payload, label = '') {
     eventBus.emit('api:request', { method: 'POST', url, label, payload });
-    
+
     try {
       const headers = await this.getAuthHeaders();
       const response = await fetch(url, {
@@ -180,35 +183,7 @@ class ApiClient {
         cache: 'no-store',
         redirect: 'follow'
       });
-
-      // Check if redirected to login page (302 redirect to HTML)
-      const finalUrl = response.url;
-      const contentType = response.headers.get('content-type') || '';
-      
-      if (finalUrl.includes('oauth_login') || finalUrl.includes('login') || finalUrl.includes('oauth')) {
-        Logger.warn('[ApiClient] Redirected to login page - session may be expired');
-        throw new ApiError(401, 'Session expired - redirected to login', url);
-      }
-
-      // Check if response is HTML instead of JSON
-      if (contentType.includes('text/html')) {
-        Logger.warn('[ApiClient] Received HTML response instead of JSON');
-        throw new ApiError(401, 'Invalid response format - HTML received', url);
-      }
-
-      if (!response.ok) {
-        const text = await response.text().catch(() => '');
-        eventBus.emit('api:error', { method: 'POST', url, status: response.status, error: text });
-        throw new ApiError(response.status, response.statusText, url);
-      }
-
-      // Validate content-type before parsing JSON
-      if (!contentType.includes('application/json')) {
-        Logger.warn('[ApiClient] Response is not JSON, content-type:', contentType);
-        throw new ApiError(400, 'Invalid response format', url);
-      }
-
-      const data = await response.json();
+      const data = await this.#handleResponse(response, 'POST', url, label);
       eventBus.emit('api:success', { method: 'POST', url, label });
       return data;
     } catch (err) {

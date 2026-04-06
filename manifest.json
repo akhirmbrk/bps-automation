@@ -6,8 +6,7 @@
   "permissions": [
     "cookies",
     "storage",
-    "tabs",
-    "webRequest"
+    "tabs"
   ],
   "host_permissions": [
     "*://fasih-sm.bps.go.id/*",
@@ -17,7 +16,7 @@
     "*://community.bps.go.id/*"
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://fasih-sm.bps.go.id https://*.bps.go.id;"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://fasih-sm.bps.go.id https://*.bps.go.id;"
   },
   "background": {
     "service_worker": "background.js"
@@ -40,11 +39,15 @@
       "matches": ["*://manajemen-mitra.bps.go.id/*"],
       "js": ["content/mitra-jwt-inject.js"],
       "run_at": "document_start",
-      "all_frames": true
+      "all_frames": false
     }
   ],
   "web_accessible_resources": [{
     "resources": ["src/*", "xlsx.full.min.js", "content/*"],
-    "matches": ["<all_urls>"]
+    "matches": [
+      "*://fasih-sm.bps.go.id/*",
+      "*://manajemen-mitra.bps.go.id/*",
+      "*://mitra-api.bps.go.id/*"
+    ]
   }]
 }

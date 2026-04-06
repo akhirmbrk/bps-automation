@@ -2469,60 +2469,29 @@ body {
 }
 
 /* ============================================
-   AKUN MITRA PAGE - Responsive & Fit Height
+   AKUN MITRA PAGE - Standalone Responsive
    ============================================ */
 
-/* Desktop: Full height flex layout */
-#page-akun-mitra {
-  display: flex;
-  flex-direction: column;
-  padding: 16px 24px;
-  min-height: calc(100vh - var(--topbar-height) - 80px);
-  overflow: hidden;
+.akun-mitra-page {
+  display: block;
+  padding: 0;
 }
 
-#page-akun-mitra > .card {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 0;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-#page-akun-mitra .card-body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  padding: 16px;
-}
-
-/* Filter row stays at top */
-#page-akun-mitra .filter-row {
-  flex-shrink: 0;
-  margin-bottom: 12px;
-}
-
-/* Loading overlay for akun mitra */
-#page-akun-mitra #akunLoading {
-  flex-shrink: 0;
+.akun-mitra-page .card-body {
+  overflow: visible;
 }
 
 /* Table wrapper fills remaining height */
-#page-akun-mitra .table-wrapper {
-  flex: 1;
+.akun-mitra-page .table-wrapper {
+  max-height: 60vh;
   overflow-y: auto;
   overflow-x: auto;
-  max-height: none;
-  min-height: 200px;
   border-radius: 8px;
 }
 
 /* Compact table rows for better density */
-#page-akun-mitra .preview-table td,
-#page-akun-mitra .preview-table th {
+.akun-mitra-page .preview-table td,
+.akun-mitra-page .preview-table th {
   padding: 8px 12px;
   font-size: 0.8rem;
   white-space: nowrap;
@@ -2531,54 +2500,41 @@ body {
   max-width: 200px;
 }
 
-#page-akun-mitra .preview-table th {
+.akun-mitra-page .preview-table th {
   position: sticky;
   top: 0;
   z-index: 10;
   background: var(--bg-secondary);
 }
 
-/* Pagination stays at bottom */
-#page-akun-mitra .pagination-wrapper {
-  flex-shrink: 0;
-  margin-top: 12px;
-  padding: 8px 0;
-  border-top: 1px solid var(--border-color);
-}
-
 /* Scrollbar styling for table */
-#page-akun-mitra .table-wrapper::-webkit-scrollbar {
+.akun-mitra-page .table-wrapper::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-#page-akun-mitra .table-wrapper::-webkit-scrollbar-track {
+.akun-mitra-page .table-wrapper::-webkit-scrollbar-track {
   background: var(--bg-secondary);
   border-radius: 4px;
 }
 
-#page-akun-mitra .table-wrapper::-webkit-scrollbar-thumb {
+.akun-mitra-page .table-wrapper::-webkit-scrollbar-thumb {
   background: var(--gray-400);
   border-radius: 4px;
 }
 
-#page-akun-mitra .table-wrapper::-webkit-scrollbar-thumb:hover {
+.akun-mitra-page .table-wrapper::-webkit-scrollbar-thumb:hover {
   background: var(--gray-500);
 }
 
 /* Tablet responsive (max 1024px) */
 @media (max-width: 1024px) {
-  #page-akun-mitra {
+  .standalone-content {
     padding: 12px 16px;
-    min-height: calc(100vh - var(--topbar-height) - 60px);
   }
   
-  #page-akun-mitra .card-body {
-    padding: 12px;
-  }
-  
-  #page-akun-mitra .preview-table td,
-  #page-akun-mitra .preview-table th {
+  .akun-mitra-page .preview-table td,
+  .akun-mitra-page .preview-table th {
     padding: 6px 8px;
     font-size: 0.75rem;
   }
@@ -2586,56 +2542,39 @@ body {
 
 /* Mobile responsive (max 768px) */
 @media (max-width: 768px) {
-  #page-akun-mitra {
-    padding: 8px;
-    min-height: auto;
-  }
-  
-  #page-akun-mitra > .card {
-    min-height: 60vh;
-  }
-  
-  #page-akun-mitra .card-body {
+  .standalone-content {
     padding: 8px;
   }
   
-  #page-akun-mitra .filter-row {
+  .akun-mitra-page .filter-row {
     flex-direction: column;
     gap: 8px;
   }
   
-  #page-akun-mitra .table-wrapper {
+  .akun-mitra-page .table-wrapper {
     max-height: 50vh;
   }
   
-  #page-akun-mitra .preview-table {
+  .akun-mitra-page .preview-table {
     font-size: 0.7rem;
   }
   
-  #page-akun-mitra .preview-table td,
-  #page-akun-mitra .preview-table th {
+  .akun-mitra-page .preview-table td,
+  .akun-mitra-page .preview-table th {
     padding: 6px 6px;
     max-width: 120px;
   }
   
   /* Make table horizontally scrollable on mobile */
-  #page-akun-mitra .preview-table {
+  .akun-mitra-page .preview-table {
     min-width: 600px;
   }
 }
 
 /* Small mobile (max 480px) */
 @media (max-width: 480px) {
-  #page-akun-mitra {
+  .standalone-content {
     padding: 4px;
-  }
-  
-  #page-akun-mitra .card-body {
-    padding: 4px;
-  }
-  
-  #page-akun-mitra .table-wrapper {
-    max-height: 45vh;
   }
 }
 

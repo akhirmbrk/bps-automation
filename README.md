@@ -93,7 +93,20 @@ Dukungan mode gelap penuh dengan desain responsif yang berfungsi di desktop dan 
 
 ## Instalasi
 
-### Produksi (Muat Ekstensi)
+### 1. Setup Dependencies (Opsional, untuk Development)
+
+```bash
+# Install dependencies
+npm install
+
+# Jalankan linter
+npm run lint
+
+# Format kode otomatis
+npm run format
+```
+
+### 2. Muat Ekstensi (Produksi)
 
 1. **Clone** repository
    ```bash

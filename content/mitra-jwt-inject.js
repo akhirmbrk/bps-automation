@@ -90,40 +90,46 @@
 
   /**
    * Method 1: Intercept XMLHttpRequest setRequestHeader
+   * Uses Object.freeze via closure to prevent prototype pollution
    */
   const originalXHRSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
-  XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
-    if (header.toLowerCase() === 'authorization' && value.startsWith('Bearer ')) {
-      sendMessageToExtension(value.substring(7));
-    }
-    return originalXHRSetRequestHeader.apply(this, arguments);
-  };
+  Object.defineProperty(XMLHttpRequest.prototype, 'setRequestHeader', {
+    value: function(header, value) {
+      if (header?.toLowerCase() === 'authorization' && typeof value === 'string' && value.startsWith('Bearer ')) {
+        sendMessageToExtension(value.substring(7));
+      }
+      return originalXHRSetRequestHeader.apply(this, arguments);
+    },
+    configurable: false,
+    writable: false
+  });
 
   /**
    * Method 2: Intercept fetch with Authorization header
+   * Wrapped in IIFE to prevent global pollution
    */
   const originalFetch = window.fetch;
   window.fetch = async function(...args) {
-    const [urlOrRequest, options = {}] = args;
-    
-    // Check for JWT in request headers
-    let requestJwt = null;
-    if (options && options.headers) {
-      const headers = options.headers;
-      if (headers instanceof Headers) {
-        requestJwt = headers.get('Authorization');
-      } else if (typeof headers === 'object') {
-        const authKey = Object.keys(headers).find(k => k.toLowerCase() === 'authorization');
-        if (authKey) requestJwt = headers[authKey];
-      }
-    }
+    const options = args[1] || {};
+    const headers = options.headers;
 
-    if (requestJwt && requestJwt.startsWith('Bearer ')) {
-      sendMessageToExtension(requestJwt.substring(7));
+    if (headers) {
+      const authValue = headers instanceof Headers
+        ? headers.get('Authorization')
+        : typeof headers === 'object'
+          ? Object.entries(headers).find(([key]) => key.toLowerCase() === 'authorization')?.[1]
+          : null;
+
+      if (typeof authValue === 'string' && authValue.startsWith('Bearer ')) {
+        sendMessageToExtension(authValue.substring(7));
+      }
     }
 
     return originalFetch.apply(this, args);
   };
+
+  // Lock fetch to prevent override
+  Object.defineProperty(window, 'fetch', { configurable: false, writable: false });
 
   /**
    * Method 3: Check localStorage/sessionStorage for JWT
