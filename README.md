@@ -1,327 +1,192 @@
-# BPS AUTOMATION v5.1.0
+# BPS Automation
 
-Ekstensi Chromium untuk otomatisasi ekstraksi data dari portal FASIH BPS dan Manajemen Mitra. Dibangun dengan arsitektur modular ES modules dan best practices modern.
+<p align="center">
+  <!-- Badges -->
+  <img src="https://img.shields.io/badge/version-5.1.0-blue?style=for-the-badge" alt="Version 5.1.0" />
+  <img src="https://img.shields.io/badge/Manifest-V3-green?style=for-the-badge" alt="Manifest V3" />
+  <img src="https://img.shields.io/badge/Chrome-Extension-orange?style=for-the-badge" alt="Chrome Extension" />
+  <img src="https://img.shields.io/badge/License-Internal-red?style=for-the-badge" alt="License" />
+</p>
 
-## 🚀 Fitur Utama
+<p align="center">
+  <b>Automated data extraction from FASIH BPS portal with modular architecture, JWT management, and comprehensive export.</b>
+</p>
 
-### 1. FASIH - Ekstraksi Data
-- **Mode Basic**: Data dasar (kode identitas, nama KK, alamat, status)
-- **Mode Ekstra**: Termasuk pre-defined data dari survei
-- **Mode Detail**: Ekstraksi lengkap termasuk answers data
-- Export ke CSV dan Excel
-- History dengan auto-expire 10 menit
+<p align="center">
+  <a href="#quick-start">Quick Start</a> · <a href="#features">Features</a> · <a href="#architecture">Architecture</a> · <a href="#installation">Installation</a> · <a href="#configuration">Configuration</a> · <a href="#changelog">Changelog</a>
+</p>
 
-### 2. FASIH - User Allocation
-- Upload template Excel untuk alokasi petugas
-- Resolve region hierarchy otomatis
-- Progress tracking real-time
-- Rate limiting configurable
+---
 
-### 3. Manajemen Mitra - Dashboard
-- **Mitra KEPKA**: Daftar mitra dengan mode Basic/Detail
-- **Riwayat Survei**: Tracking partisipasi mitra
-- Export CSV dan Excel
+## Elevator Pitch
 
-### 4. Manajemen Mitra - Scrapping
-- Load data mitra berdasarkan survei dan kegiatan
-- Filter dan export data
+**BPS Automation** is a Chromium browser extension that automates data extraction from the FASIH BPS (Badan Pusat Statistik) portal and provides comprehensive Manajemen Mitra (Partner Management) capabilities. Built for BPS enumerators and administrators, it streamlines survey data collection, user allocation, and partner tracking with a modern, modular ES6 architecture.
 
-### 5. Manajemen Mitra - Seleksi
-- Data seleksi mitra per survei/kegiatan
-- Status exam dan remedial
+---
 
-### 6. Manajemen Mitra - Akun
-- Manajemen akun mitra (paginated)
-- Search dan sort
+## Quick Start
 
-### 7. UI/UX
-- Dark mode support
-- Responsive design
-- Collapsible sidebar dengan 2 menu group
-- Real-time progress bar
-- Terminal log dengan warna
-- Profile image dari community.bps.go.id
+**Prerequisites:** Chrome 88+ or Edge 88+ (Chromium-based browser)
 
-## 🏗️ Arsitektur
+```bash
+# 1. Clone the repository
+git clone https://github.com/akhirmbrk/bps-automation.git
+cd bps-automation
 
-Proyek ini menggunakan arsitektur modular ES6 dengan pattern:
-- **Event Bus** untuk komunikasi antar modul (pub/sub)
-- **Singleton Services** untuk state management
-- **Configuration Manager** untuk centralized settings
+# 2. Load the extension
+# Open chrome://extensions/ → Enable Developer Mode → Load unpacked → Select this folder
+```
+
+---
+
+## Features
+
+- **FASIH Data Extraction** — Extract survey data in three modes: Basic (core data), Ekstra (pre-defined data), and Detail (full answers). Supports CSV and Excel export with auto-expiring history cache.
+
+- **User Allocation** — Upload Excel templates to批量 allocate enumerators. Automatic region hierarchy resolution with real-time progress tracking and configurable rate limiting.
+
+- **Mitra KEPKA Dashboard** — Browse, search, and export partner data with detailed profiles. View survey participation history and examination status.
+
+- **JWT Auto-Capture** — Automatically extracts and maintains JWT tokens from manajemen-mitra.bps.go.id via content script injection, eliminating manual token management.
+
+- **Session Monitoring** — Modern session check toast with loading state and compact floating status card to verify session health at a glance.
+
+- **Dark Mode & Responsive** — Full dark mode support with responsive design that works on desktop and tablet screens.
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    Dashboard (HTML/CSS)              │
+├─────────────────────────────────────────────────────┤
+│                  App Controller (app.js)             │
+├───────────┬───────────┬───────────┬─────────────────┤
+│   Auth    │  Surveys  │ Scraper   │  Exporter       │
+│  Module   │  Module   │  Module   │  Module         │
+├───────────┴───────────┴───────────┴─────────────────┤
+│              Core Infrastructure                     │
+│  ┌─────────┬─────────┬──────────┬────────┐          │
+│  │API      │Config   │Event Bus │Logger  │          │
+│  │Client   │Manager  │(Pub/Sub) │        │          │
+│  └─────────┴─────────┴──────────┴────────┘          │
+├─────────────────────────────────────────────────────┤
+│              Chrome Extension Layer                  │
+│  ┌──────────────┬──────────────────────────────────┐ │
+│  │Background.js │Content Scripts (JWT Injection)   │ │
+│  └──────────────┴──────────────────────────────────┘ │
+└─────────────────────────────────────────────────────┘
+```
+
+**Design Principles:**
+- **Event-driven** — Modules communicate via a centralized EventBus (pub/sub pattern)
+- **Singleton services** — Each module exports a singleton instance for consistent state
+- **Centralized constants** — All magic numbers and configuration values live in `constants.js`
+
+---
+
+## Installation
+
+### Production (Load Extension)
+
+1. **Clone** the repository
+   ```bash
+   git clone https://github.com/akhirmbrk/bps-automation.git
+   cd bps-automation
+   ```
+
+2. **Open Chrome Extensions** — Navigate to `chrome://extensions/`
+
+3. **Enable Developer Mode** — Toggle the switch in the top-right corner
+
+4. **Load Unpacked** — Click "Load unpacked" and select the repository folder (the one containing `manifest.json`)
+
+5. **Verify** — The BPS Automation icon should appear in your toolbar
+
+### After Installation
+
+1. Login to https://fasih-sm.bps.go.id in your browser
+2. Login to https://manajemen-mitra.bps.go.id (for Mitra features)
+3. Click the **BPS AUTOMATION** icon in your toolbar
+4. The dashboard will open in a new tab
+
+---
+
+## Configuration
+
+The extension uses centralized constants in `src/constants.js`. Key settings:
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| FASIH Base URL | `https://fasih-sm.bps.go.id` | FASIH server URL |
+| Mitra API URL | `https://mitra-api.bps.go.id` | Mitra API endpoint |
+| Rate Limit | `300ms` | Delay between API requests |
+| Detail Rate Limit | `100ms` | Delay for detail mode extraction |
+| Batch Size | `100` | Records per request |
+| Max Pagination | `50` | Maximum pagination pages |
+
+---
+
+## Security
+
+- **No hardcoded credentials** — All authentication uses browser session cookies
+- **JWT stored securely** — Tokens are stored in `chrome.storage.local` (encrypted by Chromium)
+- **Rate limiting** — Built-in delays prevent API abuse and server overload
+- **CSP compliant** — Content Security Policy properly configured for Chrome extension environment
+
+---
+
+## Project Structure
 
 ```
 bps-automation/
-├── manifest.json          # Chrome extension manifest v3
-├── background.js          # Service worker (messaging, cookies)
-├── dashboard.html         # Main UI dashboard
-├── main.css               # Stylesheet (~2675 lines)
-├── xlsx.full.min.js       # SheetJS library for Excel export
-├── README.md              # This documentation
-├── .gitignore             # Git ignore rules
+├── manifest.json            # Chrome extension manifest v3
+├── background.js            # Service worker (messaging, cookies)
+├── dashboard.html           # Main UI dashboard
+├── main.css                 # Stylesheet
+├── xlsx.full.min.js         # SheetJS library for Excel export
+├── .gitignore               # Git ignore rules
 ├── content/
 │   └── mitra-jwt-inject.js  # Content script for JWT extraction
-├── icons/                 # Extension icons (16/48/128px + profile)
-└── src/                   # ES6 modules
-    ├── app.js             # Main application controller
-    ├── constants.js       # Centralized constants & config
-    ├── core/              # Core infrastructure modules
-    │   ├── api-client.js  # HTTP client with retry & auth
-    │   ├── config.js      # Configuration manager
-    │   ├── event-bus.js   # Pub/sub event system
-    │   ├── logger.js      # Centralized logging
-    │   ├── utils.js       # Utility functions
-    │   └── index.js       # Core module exports
-    ├── modules/           # Feature modules
-    │   ├── auth/          # FASIH authentication
-    │   ├── surveys/       # Survey loading & management
-    │   ├── scraper/       # Data extraction engine
-    │   ├── exporter/      # CSV/Excel/JSON export
-    │   ├── allocation/    # User allocation service
-    │   └── mitra/         # Manajemen Mitra API service
-    └── storage/
-        └── history-cache.js  # Cached scraping history with TTL
+├── icons/                   # Extension icons
+└── src/
+    ├── app.js               # Main application controller
+    ├── constants.js         # Centralized constants & config
+    ├── core/                # Core infrastructure modules
+    ├── modules/             # Feature modules
+    └── storage/             # History cache
 ```
 
-## 📋 Prerequisites
+---
 
-- **Browser**: Chrome 88+ atau Edge 88+ (Chromium-based)
-- **Access**: Login ke FASIH dan Manajemen Mitra BPS
-- **Network**: Koneksi ke `*.bps.go.id`
-
-## 🔧 Instalasi
-
-### Production (Load Extension)
-1. Clone atau download repository ini
-2. Buka `chrome://extensions/` di Chrome/Edge
-3. Aktifkan **Developer mode** (toggle kanan atas)
-4. Klik **Load unpacked**
-5. Pilih folder repository ini (yang berisi `manifest.json`)
-6. Ekstensi akan muncul di toolbar (ikon puzzle piece)
-
-### Setelah Install
-1. Login ke https://fasih-sm.bps.go.id di browser
-2. Login ke https://manajemen-mitra.bps.go.id (untuk fitur Mitra)
-3. Klik icon **BPS AUTOMATION** di toolbar
-4. Dashboard akan terbuka di tab baru
-
-## 📖 Cara Penggunaan
-
-### FASIH - Ekstraksi Data
-1. Pilih survei dari dropdown
-2. Pilih mode (Basic/Ekstra/Detail)
-3. Klik **Mulai Ekstraksi**
-4. Monitor progress di terminal
-5. Download hasil (CSV/Excel) setelah selesai
-
-### FASIH - User Allocation
-1. Klik "Download Template" untuk template Excel
-2. Isi data region dan email petugas
-3. Upload file Excel
-4. Pilih survei, periode, dan role
-5. Atur opsi:
-   - **Overwrite**: Timpa assignment yang ada
-   - **Direct Assign**: Langsung assign petugas
-   - **Rate Limit**: Jeda antar request (default 500ms)
-6. Klik **Allocate Users**
-
-### Manajemen Mitra - Dashboard
-1. Pilih tahun (2024/2025/2026)
-2. Klik **Load Data** untuk memuat Mitra KEPKA
-3. Toggle mode Basic/Detail untuk tampilan berbeda
-4. Export ke CSV/Excel
-5. Klik **Detail** pada baris mitra untuk info lengkap
-
-### Manajemen Mitra - Scrapping
-1. Pilih Survei dari dropdown
-2. Pilih Kegiatan dari dropdown
-3. Klik **Load Data**
-4. Export hasil ke CSV/Excel
-
-### Manajemen Mitra - Seleksi
-1. Pilih Sensus/Survei
-2. Pilih Kegiatan
-3. Klik **Load Data Seleksi**
-4. Lihat status exam dan remedial
-
-### Manajemen Mitra - Akun
-1. Klik **Load Data** untuk memuat daftar akun
-2. Gunakan Previous/Next untuk navigasi halaman
-3. Export ke CSV
-
-### Settings
-| Setting | Default | Description |
-|---------|---------|-------------|
-| FASIH Base URL | https://fasih-sm.bps.go.id | URL server FASIH |
-| Mitra API Base URL | https://mitra-api.bps.go.id | URL API Mitra |
-| Mitra Pengguna API | https://mitra-pengguna-api.bps.go.id | URL API Pengguna Mitra |
-| Rate Limit | 300ms | Jeda antar request |
-| Detail Rate Limit | 100ms | Jeda untuk mode detail |
-| Batch Size | 100 | Record per request |
-| Max Pagination | 50 | Maksimal halaman |
-
-## 🔌 API Endpoints
-
-### FASIH - Surveys
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/survey/api/v1/surveys/datatable` | List surveys |
-| GET  | `/survey/api/v1/survey-periods?surveyId={id}` | Get periods |
-| GET  | `/survey/api/v1/users/myinfo` | Get user info |
-
-### FASIH - Region
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/region/api/v1/region/level3` | Get kecamatan |
-| GET | `/region/api/v1/region/level4` | Get desa |
-
-### FASIH - Assignment
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/analytic/api/v2/assignment/datatable-all-user-survey-periode` | Extract data |
-| GET | `/assignment-general/api/assignment/get-by-assignment-id` | Get detail |
-| POST | `/survey/api/v1/survey-period-role-users/` | Allocate users |
-
-### Manajemen Mitra
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/mitra-kepka/by-year-wil/{tahun}/{kdProv}/{kdKab}` | List Mitra KEPKA |
-| GET | `/api/mitra/id/{idMitra}` | Detail Mitra |
-| GET | `/api/mitra/hist/sm/{idMitra}?tahun={tahun}` | Riwayat Survei Mitra |
-| GET | `/api/mitra/listv3/{kdSurvei}/{idKeg}/{kdProv}/{kdKab}` | List Mitra per Survei |
-| POST | `/api/mitra/serversidetable` | List Akun Mitra (paginated) |
-| GET | `/api/keg/ks/exam-status/{kdSurvei}/{idKeg}` | Status Exam |
-| GET | `/api/wilayah/prov` | List Provinsi |
-| GET | `/api/wilayah/kab/{kdProv}` | List Kabupaten |
-| GET | `/api/wilayah/re/list/{kdProv}/{kdKab}` | List Kecamatan |
-
-## 🛠️ Troubleshooting
-
-### JavaScript tidak berjalan
-1. Reload extension di `chrome://extensions/`
-2. Pastikan manifest.json dan dashboard.html sinkron
-3. Clear cache browser
-
-### Network tab kosong (Fetch/XHR tidak muncul)
-Pastikan CSP benar di `dashboard.html`:
-```html
-<meta http-equiv="Content-Security-Policy" 
-      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; 
-               img-src 'self' data: https://community.bps.go.id https://mitra-api.bps.go.id; 
-               connect-src 'self' https://fasih-sm.bps.go.id https://*.bps.go.id chrome-extension://*;">
-```
-
-### Module import error
-Pastikan semua file `.js` menggunakan `.js` extension di import:
-```javascript
-// Correct
-import { utils } from './core/utils.js';
-
-// Wrong (will fail in Chrome extension)
-import { utils } from './core/utils';
-```
-
-### XLSX not defined
-Pastikan xlsx.full.min.js di-load sebelum app.js:
-```html
-<script src="xlsx.full.min.js"></script>
-<script type="module" src="src/app.js"></script>
-```
-
-### Allocation gagal - Region not found
-Pastikan kode region di template Excel sesuai:
-- Provinsi: 2 digit (64)
-- Kabupaten: 2 digit (03)
-- Kecamatan: 3 digit (081)
-- Desa: 3 digit (003)
-- SLS: 4 digit (0000)
-- SUBSLS: 2 digit (00)
-
-### Login session expired
-1. Klik tombol Reload (ikon refresh) di topbar
-2. Pastikan session FASIH masih aktif di browser
-
-### Mitra data tidak muncul
-1. Pastikan sudah login ke https://manajemen-mitra.bps.go.id
-2. Cek status login di sidebar (online/offline indicator)
-3. Pastikan wilayah (kdProv=64, kdKab=03) sesuai konfigurasi
-
-## 📝 Changelog
+## Changelog
 
 ### v5.1.0 (2026-04-06)
-- **FIX**: Removed duplicate code in app.js (corrupted JWT/session handlers)
-- **FIX**: Fixed debounce/throttle `this` context bug in utils.js
-- **FIX**: Removed duplicate `filterAkunMitra` function
-- **IMPROVED**: Code consistency across all modules
-- **IMPROVED**: Cleaned up unused code and dead functions
-- **NEW**: JWT auto-capture from manajemen-mitra.bps.go.id
-- **NEW**: Compact floating status card for session monitoring
-- **NEW**: Modern session check toast with loading state
 
-### v5.0.0 (2026-04-05)
-- **NEW**: Manajemen Mitra module
-  - Dashboard Mitra dengan stats
-  - Mitra KEPKA (Basic/Detail mode)
-  - Scrapping Mitra dengan export
-  - Seleksi Mitra
-  - Akun Mitra (paginated)
-- **NEW**: Dual session management (FASIH + Mitra)
-- **NEW**: Profile image dari community.bps.go.id
-- **NEW**: Sidebar dengan 2 menu groups (FASIH & Manajemen Mitra)
-- **NEW**: Session status indicator (online/offline)
-- **IMPROVED**: Loading overlay dengan step animation
-- **IMPROVED**: Responsive design untuk mobile
-- **IMPROVED**: Dark mode consistency
+**Fixes**
 
-### v4.1 (2026-04-04)
-- Fix ES module loading issue
-- Fix CSP untuk Fetch/XHR
-- Fix utils import error
-- Fix label accessibility
-- Hapus file/folder tidak digunakan
-- Update README lengkap
+- App/duplicate-code: remove duplicate `updateJwtStatus`, `checkJwtStatus`, and `checkAllSessions` functions so that corrupted JWT/session handlers no longer cause runtime errors.
+- App/filterAkunMitra: remove duplicate `filterAkunMitra` function so that cached data search works correctly without mutating service data.
+- Utils/debounce: replace `func.apply(this, args)` with `func.apply(null, args)` in debounce and throttle so that utility functions work correctly outside class context.
 
-### v4.0 (2026-04-04)
-- Refactor dari single file ke modular
-- ES modules support
-- EventBus untuk communication
-- Centralized config dan logger
+**Changes**
 
-### v3.8
-- User Allocation feature
-- Progress tracking
-- Overwrite/Direct Assign options
+- App/JWT: add JWT auto-capture from manajemen-mitra.bps.go.id via content script so that authentication is maintained without manual token input.
+- App/session-monitoring: add compact floating status card and modern session check toast with loading state so that users can verify session status at a glance.
+- Constants/config: consolidate magic numbers into named constants so that configuration is centralized and maintainable.
 
-## 🔒 Security Notes
+**Improvements**
 
-- JWT token disimpan di `chrome.storage.local` (encrypted by Chromium)
-- Tidak ada credentials hardcoded di source code
-- Cookie XSRF-TOKEN diambil dari browser session
-- Rate limiting implemented untuk mencegah API abuse
+- Code/consistency: standardize naming, optional chaining, and modern ES6+ syntax across all modules so that codebase follows industry best practices.
+- Code/cleanup: remove unreachable code, dead functions, and unnecessary imports so that bundle size and complexity are reduced.
+- Structure: move all files from extension/ folder to repository root so that Chrome extension structure follows standard conventions.
 
-## 🧪 Development
+[Full Changelog](https://github.com/akhirmbrk/bps-automation/releases/tag/v5.1.0)
 
-### Project Structure
-- Semua modul menggunakan ES6+ syntax
-- Service pattern dengan singleton instances
-- Event-driven architecture menggunakan EventBus
+---
 
-### Key Patterns
-```javascript
-// Module imports
-import { eventBus } from './core/event-bus.js';
-import { authService } from './modules/auth/index.js';
-
-// Event emission
-eventBus.emit('scraper:complete', { totalRecords: 100 });
-
-// Event subscription
-eventBus.on('scraper:complete', (data) => { ... });
-```
-
-## 👨‍💻 Developer
-
-**BPS Kabupaten Kutai Kartanegara**
-
-## 📄 License
-
-Internal use only - BPS Kabupaten Kutai Kartanegara
+<p align="center">
+  <b>BPS Kabupaten Kutai Kartanegara</b><br />
+  <sub>Internal use only</sub>
+</p>
