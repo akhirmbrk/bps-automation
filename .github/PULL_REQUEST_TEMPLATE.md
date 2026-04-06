@@ -1,28 +1,28 @@
-## Description
+## Deskripsi
 
-<!-- Brief summary of changes made -->
+<!-- Ringkasan singkat perubahan yang dibuat -->
 
-## Type of Change
+## Jenis Perubahan
 
-- [ ] 🐛 Bug fix (non-breaking change)
-- [ ] ✨ New feature
-- [ ] 💥 Breaking change
-- [ ] 📝 Documentation update
+- [ ] 🐛 Perbaikan bug (non-breaking)
+- [ ] ✨ Fitur baru
+- [ ] 💥 Perubahan breaking
+- [ ] 📝 Pembaruan dokumentasi
 - [ ] ♻️ Refactoring
 
-## Testing
+## Pengujian
 
-- [ ] Tested locally in Chrome/Edge
-- [ ] No console errors in extension dashboard
-- [ ] Feature works as expected
+- [ ] Diuji lokal di Chrome/Edge
+- [ ] Tidak ada error di console dashboard ekstensi
+- [ ] Fitur berfungsi sesuai harapan
 
 ## Checklist
 
-- [ ] Code follows project standards (ES6+, strict equality)
-- [ ] No sensitive data exposed (no hardcoded credentials/tokens)
-- [ ] README.md updated if features changed
-- [ ] Changes documented with comments where needed
+- [ ] Kode mengikuti standar proyek (ES6+, equality ketat)
+- [ ] Tidak ada data sensitif (tidak ada kredensial/token hardcoded)
+- [ ] README.md diperbarui jika fitur berubah
+- [ ] Perubahan didokumentasikan dengan komentar
 
-## Screenshots (if applicable)
+## Tangkapan Layar (jika ada)
 
-<!-- Add screenshots of UI changes -->
+<!-- Tambahkan tangkapan layar untuk perubahan UI -->

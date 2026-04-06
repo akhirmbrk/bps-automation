@@ -1,44 +1,44 @@
-# Security Policy
+# Kebijakan Keamanan
 
-## Supported Versions
+## Versi yang Didukung
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| < 5.0   | :x:                |
+| Versi | Didukung          |
+| ----- | ----------------- |
+| 5.1.x | :white_check_mark: |
+| < 5.0 | :x:               |
 
-## Reporting a Vulnerability
+## Melaporkan Kerentanan
 
-This project is a browser extension that interacts with internal BPS (Badan Pusat Statistik) systems. Security is our top priority.
+Proyek ini adalah ekstensi browser yang berinteraksi dengan sistem internal BPS (Badan Pusat Statistik). Keamanan adalah prioritas utama kami.
 
-### How to Report
+### Cara Melaporkan
 
-**Please DO NOT report security vulnerabilities through public GitHub issues.**
+**JANGAN melaporkan kerentanan keamanan melalui issue GitHub publik.**
 
-Instead:
+Sebagai gantinya:
 
-1. **Email**: Send a detailed report to your project maintainer
-2. **Include**:
-   - Type of vulnerability
-   - Steps to reproduce
-   - Potential impact assessment
-   - Any suggested fixes
+1. **Email**: Kirim laporan detail ke maintainer proyek Anda
+2. **Sertakan**:
+   - Jenis kerentanan
+   - Langkah reproduksi
+   - Penilaian dampak potensial
+   - Saran perbaikan (jika ada)
 
-### What to Expect
+### Yang Diharapkan
 
-- **Acknowledgment**: Within 48 hours
-- **Initial Assessment**: Within 5 business days
-- **Status Update**: Weekly updates during investigation
-- **Resolution Timeline**: We aim to address critical vulnerabilities within 30 days
+- **Konfirmasi**: Dalam 48 jam
+- **Penilaian Awal**: Dalam 5 hari kerja
+- **Pembaruan Status**: Pembaruan mingguan selama investigasi
+- **Target Resolusi**: Kami berupaya mengatasi kerentanan kritis dalam 30 hari
 
-### Scope of Security Concerns
+### Lingkup Keamanan
 
-This extension has access to:
-- Browser cookies and session data
-- API tokens (JWT)
-- User profile information
+Ekstensi ini memiliki akses ke:
+- Cookie dan data sesi browser
+- Token API (JWT)
+- Informasi profil pengguna
 
-All handling of sensitive data follows:
-- Browser-native storage encryption (Chrome encrypts stored data)
-- No credentials hardcoded in source code
-- No logging of sensitive information (tokens, passwords)
+Semua penanganan data sensitif mengikuti:
+- Enkripsi penyimpanan native browser (Chrome mengenkripsi data tersimpan)
+- Tidak ada kredensial hardcoded di source code
+- Tidak ada logging informasi sensitif (token, password)

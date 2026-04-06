@@ -1,160 +1,160 @@
-# Contributing to BPS Automation
+# Berkontribusi ke BPS Automation
 
-First off, thank you for considering contributing to BPS Automation! This extension helps BPS teams work more efficiently, and every contribution matters.
+Pertama-tama, terima kasih telah mempertimbangkan untuk berkontribusi ke BPS Automation! Ekstensi ini membantu tim BPS bekerja dengan lebih efisien, dan setiap kontribusi sangat berarti.
 
-## Table of Contents
+## Daftar Isi
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
-- [Development Setup](#development-setup)
-- [Coding Standards](#coding-standards)
-- [Pull Request Process](#pull-request-process)
-- [Commit Message Guidelines](#commit-message-guidelines)
+- [Kode Etik](#kode-etik)
+- [Memulai](#memulai)
+- [Setup Development](#setup-development)
+- [Standar Pengkodean](#standar-pengkodean)
+- [Proses Pull Request](#proses-pull-request)
+- [Panduan Commit Message](#panduan-commit-message)
 
-## Code of Conduct
+## Kode Etik
 
-- Be respectful and inclusive
-- Accept constructive feedback gracefully
-- Focus on what's best for the community
+- Bersikap hormat dan inklusif
+- Terima umpan balik konstruktif dengan lapang dada
+- Fokus pada yang terbaik untuk komunitas
 
-## Getting Started
+## Memulai
 
-### Prerequisites
+### Prasyarat
 
-- Chrome 88+ or Edge 88+ (Chromium-based)
-- VS Code (recommended) or any code editor
+- Chrome 88+ atau Edge 88+ (berbasis Chromium)
+- VS Code (direkomendasikan) atau editor kode lainnya
 
-### Development Setup
+### Setup Development
 
 ```bash
-# 1. Fork and clone the repository
+# 1. Fork dan clone repository
 git clone https://github.com/akhirmbrk/bps-automation.git
 cd bps-automation
 
-# 2. Load as unpacked extension in Chrome
-# Open chrome://extensions/ → Developer Mode → Load unpacked → Select folder
+# 2. Muat sebagai ekstensi terbongkar di Chrome
+# Buka chrome://extensions/ → Mode Pengembang → Muat Ekstensi Terbongkar → Pilih folder
 ```
 
-## Coding Standards
+## Standar Pengkodean
 
 ### JavaScript/ES6+
 
 ```javascript
-// ✅ DO: Use ES6+ features and modern patterns
+// ✅ LAKUKAN: Gunakan fitur ES6+ dan pola modern
 const getConfig = () => config.get();
 const { api, scraper } = config.get();
 
-// ✅ DO: Use strict equality
+// ✅ LAKUKAN: Gunakan equality ketat
 if (value === null) return;
 
-// ❌ DON'T: Use var or loose equality
+// ❌ JANGAN: Gunakan var atau equality longgar
 var config = getConfig();
 if (value == null) return;
 ```
 
-### Naming Conventions
+### Konvensi Penamaan
 
-- **Variables/Functions**: camelCase (`loadSurveys`, `isDarkMode`)
-- **Classes**: PascalCase (`App`, `ScraperService`)
-- **Constants**: UPPER_SNAKE_CASE (`API_ENDPOINTS`, `MAX_RETRIES`)
-- **Files**: kebab-case (`auth-service.js`, `event-bus.js`)
+- **Variabel/Fungsi**: camelCase (`loadSurveys`, `isDarkMode`)
+- **Kelas**: PascalCase (`App`, `ScraperService`)
+- **Konstanta**: UPPER_SNAKE_CASE (`API_ENDPOINTS`, `MAX_RETRIES`)
+- **File**: kebab-case (`auth-service.js`, `event-bus.js`)
 
-### Architecture Guidelines
+### Pedoman Arsitektur
 
-1. **Use EventBus for cross-module communication** — Don't import modules directly across feature boundaries
-2. **Export singletons from modules** — Each module exports one singleton instance
-3. **Centralize constants** — Add new constants to `src/constants.js`, not inline values
-4. **Error handling** — Always use try/catch for async operations
+1. **Gunakan EventBus untuk komunikasi lintas modul** — Jangan impor modul langsung melintasi batas fitur
+2. **Ekspor singleton dari modul** — Setiap modul mengekspor satu singleton instance
+3. **Pusatkan konstanta** — Tambahkan konstanta baru ke `src/constants.js`, bukan inline
+4. **Penanganan error** — Selalu gunakan try/catch untuk operasi async
 
-### Code Style
+### Gaya Kode
 
-- Use 2-space indentation
-- Semicolons required
-- Single quotes for strings (unless escaping is needed)
-- Trailing commas in arrays/objects
-- No unused variables or imports
+- Gunakan indentasi 2 spasi
+- Semicolon wajib
+- Kutip tunggal untuk string (kecuali perlu escape)
+- Trailing commas di array/objek
+- Tidak ada variabel atau import yang tidak digunakan
 
-## Pull Request Process
+## Proses Pull Request
 
-### Before Submitting
+### Sebelum Mengirim
 
-- [ ] Code follows project standards
-- [ ] No console.log or debug statements
-- [ ] No sensitive data (tokens, credentials)
-- [ ] README.md updated if features changed
-- [ ] Tested locally in Chrome/Edge
+- [ ] Kode mengikuti standar proyek
+- [ ] Tidak ada console.log atau debug statement
+- [ ] Tidak ada data sensitif (token, kredensial)
+- [ ] README.md diperbarui jika fitur berubah
+- [ ] Diuji lokal di Chrome/Edge
 
-### PR Description Template
+### Template Deskripsi PR
 
 ```markdown
-## Description
-Brief summary of changes.
+## Deskripsi
+Ringkasan singkat perubahan yang dibuat.
 
-## Type of Change
-- [ ] Bug fix (non-breaking change)
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
+## Jenis Perubahan
+- [ ] Perbaikan bug (perubahan non-breaking)
+- [ ] Fitur baru
+- [ ] Perubahan breaking
+- [ ] Pembaruan dokumentasi
 
-## Testing
-- [ ] Tested locally in Chrome
-- [ ] No console errors
+## Pengujian
+- [ ] Diuji lokal di Chrome
+- [ ] Tidak ada error di console
 
 ## Checklist
-- [ ] Code follows project standards
-- [ ] No sensitive data exposed
-- [ ] Changes documented
+- [ ] Kode mengikuti standar proyek
+- [ ] Tidak ada data sensitif terlihat
+- [ ] Perubahan didokumentasikan
 ```
 
-## Commit Message Guidelines
+## Panduan Commit Message
 
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-```
-
-### Types
-
-| Type | Use When |
-|------|----------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `refactor` | Code change that doesn't fix a bug or add a feature |
-| `style` | Formatting, missing semicolons, etc |
-| `test` | Adding or updating tests |
-| `chore` | Maintenance tasks |
-
-### Examples
+Kami mengikuti [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
-feat(app): add JWT auto-capture from manajemen-mitra
-fix(utils): correct debounce this context binding
-docs(readme): update installation instructions
-refactor(scraper): extract pagination logic to separate function
-chore(deps): update xlsx library to v0.18.0
+<tipe>(<scope>): <deskripsi>
+
+[body opsional]
 ```
 
-## Project Structure
+### Tipe
+
+| Tipe | Gunakan Ketika |
+|------|----------------|
+| `feat` | Fitur baru |
+| `fix` | Perbaikan bug |
+| `docs` | Hanya dokumentasi |
+| `refactor` | Perubahan kode yang bukan perbaikan bug atau penambahan fitur |
+| `style` | Format, semicolon hilang, dll |
+| `test` | Menambah atau memperbarui test |
+| `chore` | Tugas pemeliharaan |
+
+### Contoh
+
+```
+feat(app): tambah auto-capture JWT dari manajemen-mitra
+fix(utils): perbaiki binding this pada debounce
+docs(readme): perbarui instruksi instalasi
+refactor(scraper): ekstraksi logika pagination ke fungsi terpisah
+chore(deps): perbarui library xlsx ke v0.18.0
+```
+
+## Struktur Proyek
 
 ```
 src/
-├── app.js              # Main controller
-├── constants.js        # Centralized constants
-├── core/               # Infrastructure modules
-├── modules/            # Feature modules
-│   ├── auth/           # Authentication
-│   ├── surveys/        # Survey management
-│   ├── scraper/        # Data extraction
-│   ├── exporter/       # Export services
-│   ├── allocation/     # User allocation
-│   └── mitra/          # Mitra management
-└── storage/            # History cache
+├── app.js              # Controller utama
+├── constants.js        # Konstanta terpusat
+├── core/               # Modul infrastruktur
+├── modules/            # Modul fitur
+│   ├── auth/           # Autentikasi
+│   ├── surveys/        # Manajemen survei
+│   ├── scraper/        # Ekstraksi data
+│   ├── exporter/       # Layanan export
+│   ├── allocation/     # Alokasi pengguna
+│   └── mitra/          # Manajemen mitra
+└── storage/            # Cache riwayat
 ```
 
-## Need Help?
+## Butuh Bantuan?
 
-If you have questions, reach out to the project maintainer through repository issues or your team's communication channel.
+Jika Anda memiliki pertanyaan, hubungi maintainer proyek melalui issue repository atau saluran komunikasi tim Anda.
