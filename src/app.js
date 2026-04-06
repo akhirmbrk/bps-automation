@@ -19,7 +19,8 @@ import {
   PAGE_TITLES,
   STORAGE_KEYS,
   SURVEY_ROLES,
-  ALLOCATION_TEMPLATE_DATA
+  ALLOCATION_TEMPLATE_DATA,
+  HISTORY_CONFIG
 } from './constants.js';
 
 class App {
@@ -163,7 +164,6 @@ class App {
 
   /**
    * Update loading step in floating card
-   * @param {string} step - Step name (init, auth, surveys)
    */
   updateLoadingStep(step) {
     const stepIcons = { init: '⚙️', auth: '🔐', surveys: '📊' };
@@ -208,7 +208,6 @@ class App {
       'downloadTemplateBtn', 'allocationLog', 'allocationProgressBar',
       'allocationProgressText', 'allocationTerminal',
       // Mitra elements
-      'userAvatarSidebar',
       'mitraTahunSelect', 'loadMitraKepkaBtn', 'downloadMitraCsvBtn', 'downloadMitraExcelBtn',
       'mitraKepkaTableBody', 'mitraHistoryTableBody',
       'statMitraTotal', 'statMitraDiterima', 'statMitraSurvei', 'statMitraTahun',
@@ -372,13 +371,8 @@ class App {
   }
 
   setupModuleEventListeners() {
-    // Auth events
     eventBus.on('auth:status', (data) => this.handleAuthStatus(data));
-
-    // Survey events
     eventBus.on('surveys:loaded', (data) => this.handleSurveysLoaded(data));
-
-    // Scraper events
     eventBus.on('scraper:start', () => this.handleScraperStart());
     eventBus.on('scraper:progress', (data) => this.handleScraperProgress(data));
     eventBus.on('scraper:timer', (data) => this.handleScraperTimer(data));
@@ -386,18 +380,12 @@ class App {
     eventBus.on('scraper:desa', (data) => this.handleScraperDesa(data));
     eventBus.on('scraper:complete', (data) => this.handleScraperComplete(data));
     eventBus.on('scraper:error', (data) => this.handleScraperError(data));
-
-    // Exporter events
     eventBus.on('exporter:success', (data) => this.log(`✅ Tersimpan: ${data.filename}`, 'success'));
-
-    // Allocation events
     eventBus.on('allocation:progress', (data) => this.handleAllocationProgress(data));
     eventBus.on('allocation:row_success', (data) => this.handleAllocationRowSuccess(data));
     eventBus.on('allocation:row_error', (data) => this.handleAllocationRowError(data));
     eventBus.on('allocation:complete', (data) => this.handleAllocationComplete(data));
     eventBus.on('allocation:error', (data) => this.handleAllocationError(data));
-
-    // Mitra events
     eventBus.on('mitra:kepka_loaded', (data) => this.handleMitraKepkaLoaded(data));
     eventBus.on('mitra:scrap_loaded', (data) => this.handleMitraScrapLoaded(data));
     eventBus.on('mitra:akun_loaded', (data) => this.handleAkunMitraLoaded(data));
@@ -415,17 +403,14 @@ class App {
     }
     this.currentPage = pageName;
     
-    // Check JWT status when switching to settings page
     if (pageName === 'settings') {
       this.checkJwtStatus();
     }
     
-    // Auto-load Akun Mitra when switching to akun-mitra page
     if (pageName === 'akun-mitra') {
       this.loadAllAkunMitraAuto();
     }
     
-    // Load survei list when switching to scrapping or seleksi pages
     if (pageName === 'scrapping-mitra' || pageName === 'seleksi-mitra') {
       if (this.elements.mitraSurveySelect?.options.length <= 1) {
         this.loadMitraSurveiList();
@@ -544,8 +529,6 @@ class App {
     if (this.elements.statHistory) this.elements.statHistory.textContent = historyCount;
   }
 
-  // ===== SCRAPER METHODS =====
-
   async startScraping() {
     const surveySelect = this.elements.surveySelect?.value;
     if (!surveySelect) {
@@ -656,8 +639,6 @@ class App {
     }
   }
 
-  // ===== ALLOCATION METHODS =====
-
   async handleAllocationFile(file) {
     try {
       this.log(`📂 Membaca file: ${file.name}`, 'info');
@@ -754,8 +735,6 @@ class App {
     this.elements.allocationTerminal.scrollTop = this.elements.allocationTerminal.scrollHeight;
   }
 
-  // ===== UI METHODS =====
-
   log(message, type = 'info') {
     if (!this.elements.logTerminal) return;
     const timestamp = new Date().toLocaleTimeString('id-ID');
@@ -799,8 +778,6 @@ class App {
     this.elements.loadingModal?.classList.remove('active');
   }
 
-  // ===== SETTINGS =====
-
   saveSettings() {
     config.update({
       api: { baseUrl: this.elements.apiBaseUrl?.value || 'https://fasih-sm.bps.go.id' },
@@ -829,8 +806,6 @@ class App {
     if (this.elements.maxPagination) this.elements.maxPagination.value = cfg.scraper.maxPaginationPages;
   }
 
-  // ===== HISTORY =====
-
   addToHistory(surveyName, mode, records, duration) {
     const id = utils.generateId();
     const results = scraperService.getResults();
@@ -844,12 +819,12 @@ class App {
     this.updateStats();
   }
 
-  formatFileSize(bytes) {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  getRemainingTime(timestamp) {
+    const remaining = (timestamp + HISTORY_CONFIG.TTL_MS) - Date.now();
+    if (remaining <= 0) return '00:00';
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   }
 
   renderHistory() {
@@ -863,8 +838,8 @@ class App {
     }
     
     this.elements.historyList.innerHTML = allHistory.map(h => {
-      const isExpired = (Date.now() - h.timestamp) > (10 * 60 * 1000);
-      const sizeStr = h.fileSize ? this.formatFileSize(h.fileSize) : '-';
+      const isExpired = (Date.now() - h.timestamp) > HISTORY_CONFIG.TTL_MS;
+      const sizeStr = h.fileSize ? utils.formatBytes(h.fileSize) : '-';
       return `
         <div class="history-item">
           <div class="history-info">
@@ -898,14 +873,6 @@ class App {
     });
   }
 
-  getRemainingTime(timestamp) {
-    const remaining = (timestamp + 10 * 60 * 1000) - Date.now();
-    if (remaining <= 0) return '00:00';
-    const mins = Math.floor(remaining / 60000);
-    const secs = Math.floor((remaining % 60000) / 1000);
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  }
-
   updateHistoryCountdowns() {
     document.querySelectorAll('.history-countdown').forEach(el => {
       const ts = parseInt(el.getAttribute('data-timestamp'));
@@ -929,8 +896,6 @@ class App {
     this.updateStats();
     this.log(`🗑️ ${count} riwayat scraped dihapus`, 'success');
   }
-
-  // ===== MITRA METHODS =====
 
   async loadMitraKepka() {
     const tahun = this.elements.mitraTahunSelect?.value || '2026';
@@ -963,7 +928,6 @@ class App {
       </tr>
     `).join('');
 
-    // Add event listeners for detail buttons
     this.elements.mitraKepkaTableBody.querySelectorAll('.mitra-detail-btn').forEach(btn => {
       btn.addEventListener('click', () => this.showMitraDetail(btn.dataset.id));
     });
@@ -983,12 +947,10 @@ class App {
       return;
     }
     
-    // Show modal
     if (this.elements.mitraDetailModal) {
       this.elements.mitraDetailModal.classList.add('active');
     }
     
-    // Render detail content
     if (this.elements.mitraDetailBody) {
       this.elements.mitraDetailBody.innerHTML = `
         <div class="detail-row"><span class="detail-label">ID Mitra</span><span class="detail-value">${detail.idmitra || '-'}</span></div>
@@ -1021,7 +983,6 @@ class App {
       `;
     }
     
-    // Load history for this mitra
     this.log(`📊 Memuat riwayat survei mitra...`, 'info');
     await this.loadMitraHistory(idMitra);
   }
@@ -1228,9 +1189,6 @@ class App {
     this.log('📥 Akun Mitra Excel downloaded', 'success');
   }
 
-  /**
-   * Close Mitra Detail Modal
-   */
   closeMitraDetailModal() {
     if (this.elements.mitraDetailModal) {
       this.elements.mitraDetailModal.classList.remove('active');
@@ -1238,50 +1196,10 @@ class App {
   }
 
   /**
-   * Filter select options based on search input
-   */
-  filterSelect(input) {
-    const targetId = input.dataset.target;
-    const select = document.getElementById(targetId);
-    if (!select) return;
-    const query = input.value.toLowerCase();
-    const options = select.querySelectorAll('option');
-    let visibleCount = 0;
-    options.forEach(opt => {
-      const text = opt.textContent.toLowerCase();
-      const match = text.includes(query);
-      opt.style.display = match ? '' : 'none';
-      if (match && opt.value) visibleCount++;
-    });
-  }
-
-  /**
-   * Load kabupaten for a given provinsi into a select element
-   */
-  async loadKabupatenForSelect(selectId, kdProv) {
-    const select = document.getElementById(selectId);
-    if (!select) return;
-    select.innerHTML = '<option value="">-- Pilih Kabupaten --</option>';
-    try {
-      const kabupaten = await mitraService.getKabupaten(kdProv);
-      kabupaten.forEach(k => {
-        const opt = document.createElement('option');
-        opt.value = k.kd_kab || k.id;
-        opt.textContent = k.nama || k.kabupaten;
-        select.appendChild(opt);
-      });
-      this.log(`✅ ${kabupaten.length} kabupaten dimuat`, 'success');
-    } catch (err) {
-      this.log(`❌ Error loading kabupaten: ${err.message}`, 'error');
-    }
-  }
-
-  /**
    * Auto-load all Akun Mitra data when switching to page
-   * Shows loading UI and fetches all data at once
    */
   async loadAllAkunMitraAuto() {
-    if (this.akunMitraAllData.length > 0) return; // Already loaded
+    if (this.akunMitraAllData.length > 0) return;
     
     const loadingEl = this.elements.akunLoading;
     const tableBody = this.elements.akunMitraTableBody;
@@ -1310,9 +1228,6 @@ class App {
     }
   }
 
-  /**
-   * Render Akun Mitra table with all data
-   */
   renderAkunMitraTableWithAllData(data) {
     if (!this.elements.akunMitraTableBody) return;
     if (!data || data.length === 0) {
@@ -1332,14 +1247,10 @@ class App {
     if (this.elements.pageInfo) {
       this.elements.pageInfo.textContent = `Menampilkan semua ${data.length} data`;
     }
-    // Hide pagination since we show all data
     if (this.elements.prevPageBtn) this.elements.prevPageBtn.style.display = 'none';
     if (this.elements.nextPageBtn) this.elements.nextPageBtn.style.display = 'none';
   }
 
-  /**
-   * Filter Akun Mitra from cached data (live search)
-   */
   filterAkunMitra(query) {
     const lowerQuery = (query || '').toLowerCase();
     const allData = this.akunMitraAllData;
@@ -1355,10 +1266,6 @@ class App {
     this.renderAkunMitraTableWithAllData(filtered);
   }
 
-  /**
-   * Download All Mitra KEPKA Detail as CSV
-   * Fetches detailed data for each mitra one by one
-   */
   async downloadAllMitraDetailCSV() {
     if (this.mitraKepkaData.length === 0) {
       this.log('⚠️ Tidak ada data Mitra KEPKA', 'warning');
@@ -1367,9 +1274,6 @@ class App {
     await this._downloadAllMitraDetail('csv');
   }
 
-  /**
-   * Download All Mitra KEPKA Detail as Excel
-   */
   async downloadAllMitraDetailExcel() {
     if (this.mitraKepkaData.length === 0) {
       this.log('⚠️ Tidak ada data Mitra KEPKA', 'warning');
@@ -1378,9 +1282,6 @@ class App {
     await this._downloadAllMitraDetail('excel');
   }
 
-  /**
-   * Internal: Download all detail with progress
-   */
   async _downloadAllMitraDetail(format) {
     const progressDiv = this.elements.detailProgress;
     const progressText = this.elements.detailProgressText;
@@ -1408,7 +1309,6 @@ class App {
         if (detail) {
           allDetail.push(detail);
         }
-        // Rate limit: 1 second between requests
         await new Promise(r => setTimeout(r, 1000));
       } catch (err) {
         this.log(`⚠️ Gagal mengambil detail ID ${idMitra}: ${err.message}`, 'warning');
@@ -1429,15 +1329,11 @@ class App {
       this._exportDetailToExcel(allDetail);
     }
     
-    // Hide progress after 3 seconds
     setTimeout(() => {
       if (progressDiv) progressDiv.style.display = 'none';
     }, 3000);
   }
 
-  /**
-   * Export detail data to CSV
-   */
   _exportDetailToCSV(data) {
     const headers = ['ID Mitra', 'NIK', 'Nama Lengkap', 'Email', 'Username', 'Status', 'No Telp', 'NPWP', 'Alamat', 'Provinsi', 'Kabupaten', 'Kecamatan', 'Desa', 'Tgl Lahir', 'Jenis Kelamin', 'Agama', 'Status Kawin', 'Pendidikan', 'Pekerjaan', 'Bank', 'No Rekening', 'Nama Rekening', 'Merk HP', 'Tipe HP', 'RAM HP', 'Sobat ID', 'Foto URL', 'Foto KTP URL'];
     const rows = data.map(d => [
@@ -1482,9 +1378,6 @@ class App {
     this.log(`📥 Downloaded ${data.length} detail records as CSV`, 'success');
   }
 
-  /**
-   * Export detail data to Excel
-   */
   _exportDetailToExcel(data) {
     if (!window.XLSX) {
       this.log('❌ Library XLSX tidak tersedia', 'error');
@@ -1527,27 +1420,19 @@ class App {
     this.log(`📥 Downloaded ${data.length} detail records as Excel`, 'success');
   }
 
-  /**
-   * Load survei list for Scrapping and Seleksi pages
-   * Uses RE list to get idKeg, then loads survei list
-   */
   async loadMitraSurveiList() {
     try {
       this.log('📊 Memuat daftar survei Mitra...', 'info');
-      // Step 1: Get RE list to find idKeg
       const reList = await mitraService.getReList(mitraService.kdProv, mitraService.kdKab);
       if (reList.length === 0) {
         this.log('⚠️ Tidak ada data RE ditemukan', 'warning');
         return;
       }
-      // Use first available idKeg
       const idKeg = reList[0].idKeg || '1';
       
-      // Step 2: Get survei list using idKeg
       const surveys = await mitraService.getSurveiList(idKeg);
       this.mitraSurveiList = surveys;
       
-      // Populate both scrapping and seleksi survey selects
       if (this.elements.mitraSurveySelect) {
         this.elements.mitraSurveySelect.innerHTML = '<option value="">-- Pilih Survei --</option>';
         surveys.forEach(s => {
@@ -1588,8 +1473,6 @@ class App {
     }
   }
 
-  // ===== MITRA EVENT HANDLERS =====
-
   handleMitraKepkaLoaded(data) {
     this.log(`✅ ${data.count} data Mitra KEPKA dimuat`, 'success');
   }
@@ -1606,11 +1489,6 @@ class App {
     this.log(`❌ Mitra Error: ${data.message}`, 'error');
   }
 
-  // ===== JWT TOKEN MANAGEMENT =====
-
-  /**
-   * Save JWT token manually from settings input
-   */
   async saveJwtToken() {
     const tokenInput = this.elements.mitraJwtTokenInput?.value?.trim();
     if (!tokenInput) {
@@ -1622,12 +1500,10 @@ class App {
       return;
     }
     try {
-      // Validate JWT format
       const parts = tokenInput.split('.');
       if (parts.length !== 3) {
         throw new Error('Invalid JWT format');
       }
-      // Check expiry
       const payload = JSON.parse(atob(parts[1]));
       const now = Math.floor(Date.now() / 1000);
       if (payload.exp && payload.exp < now) {
@@ -1635,7 +1511,6 @@ class App {
         this.log(`⚠️ Token sudah expired (exp: ${expDate.toLocaleString()})`, 'warning');
         return;
       }
-      // Save token
       await mitraService.storeJwtManually(tokenInput);
       this.log(`✅ JWT token disimpan (exp: ${new Date(payload.exp * 1000).toLocaleString()})`, 'success');
       this.updateJwtStatus('✅ Token valid tersimpan', 'success');
@@ -1645,9 +1520,6 @@ class App {
     }
   }
 
-  /**
-   * Clear JWT token
-   */
   async clearJwtToken() {
     return new Promise((resolve) => {
       chrome.runtime.sendMessage({ action: 'clearJwtToken' }, () => {
@@ -1660,9 +1532,6 @@ class App {
     });
   }
 
-  /**
-   * Update JWT status display
-   */
   async updateJwtStatus(message, type = 'info') {
     if (!this.elements.jwtStatus) return;
     const colors = {
@@ -1675,13 +1544,9 @@ class App {
     this.elements.jwtStatus.style.color = colors[type] || colors.info;
   }
 
-  /**
-   * Check and display current JWT status, show token in textarea
-   */
   async checkJwtStatus() {
     const token = await mitraService.getJwtToken();
     if (token) {
-      // Display token in textarea
       if (this.elements.mitraJwtTokenInput) {
         this.elements.mitraJwtTokenInput.value = token;
       }
@@ -1703,10 +1568,7 @@ class App {
     }
   }
 
-  /**
-   * Check all sessions and show toast with loading then results
-   */
-   async checkAllSessions() {
+  async checkAllSessions() {
     const checks = {
       fasih: {
         name: 'FASIH',
@@ -1748,8 +1610,7 @@ class App {
         url: 'https://simpeg.bps.go.id',
         icon: '🏢',
         check: async () => {
-          const avatar = document.getElementById('userAvatarSidebar');
-          return avatar && avatar.src && !avatar.src.includes('profile.png') && !avatar.src.includes('icon128');
+          return this.elements.userAvatarSidebar && this.elements.userAvatarSidebar.src && !this.elements.userAvatarSidebar.src.includes('profile.png') && !this.elements.userAvatarSidebar.src.includes('icon128');
         },
         statusText: (ok) => ok ? 'Foto terload' : 'Foto tidak terload',
         statusClass: (ok) => ok ? 'success' : 'warning'
@@ -1773,10 +1634,8 @@ class App {
       }
     };
 
-    // Show loading toast first
     this.showSessionLoadingToast();
 
-    // Run all checks in parallel
     const results = {};
     const checkPromises = Object.entries(checks).map(async ([key, check]) => {
       try {
@@ -1787,24 +1646,18 @@ class App {
     });
     await Promise.all(checkPromises);
 
-    // Show results toast (always, even if all active)
     this.showSessionResultsToast(checks, results);
   }
 
-  /**
-   * Show loading state in session toast
-   */
   showSessionLoadingToast() {
     const toast = document.getElementById('sessionToast');
     const content = document.getElementById('sessionToastContent');
     const header = toast?.querySelector('.session-toast-header');
     if (!toast || !content || !header) return;
 
-    // Set header to info/loading state
     header.className = 'session-toast-header';
     header.querySelector('span').textContent = '⏳ Memeriksa Session...';
 
-    // Show loading spinner
     content.innerHTML = `
       <div class="session-toast-loading">
         <div class="session-toast-spinner"></div>
@@ -1815,9 +1668,6 @@ class App {
     toast.classList.add('active');
   }
 
-  /**
-   * Show session results toast (always shown)
-   */
   showSessionResultsToast(checks, results) {
     const toast = document.getElementById('sessionToast');
     const content = document.getElementById('sessionToastContent');
@@ -1828,13 +1678,11 @@ class App {
     const totalCount = Object.keys(results).length;
     const allActive = successCount === totalCount;
 
-    // Update header
     header.className = 'session-toast-header ' + (allActive ? 'success' : 'warning');
     header.querySelector('span').textContent = allActive
       ? `✅ ${successCount}/${totalCount} Semua Session Aktif`
       : `⚠️ ${totalCount - successCount}/${totalCount} Session Perlu Perhatian`;
 
-    // Build results HTML
     content.innerHTML = `
       <div class="session-toast-message" style="max-height:250px; overflow-y:auto;">
         ${Object.entries(checks).map(([key, check]) => {
@@ -1858,12 +1706,10 @@ class App {
       </div>
     `;
 
-    // Auto-dismiss after 10 seconds
     const autoDismiss = setTimeout(() => {
       toast.classList.remove('active');
     }, 10000);
 
-    // Close button
     const closeBtn = document.getElementById('sessionToastClose');
     closeBtn?.addEventListener('click', () => {
       clearTimeout(autoDismiss);
@@ -1871,186 +1717,6 @@ class App {
     }, { once: true });
   }
 
-  /**
-   * Show session warning toast (compact, top-right)
-   */
-  showSessionWarningToast(checks, results) {
-    const toast = document.getElementById('sessionToast');
-    if (!toast) return;
-
-    const content = document.getElementById('sessionToastContent');
-    if (!content) return;
-
-    content.innerHTML = '';
-
-    for (const [key, check] of Object.entries(checks)) {
-      const isOk = results[key];
-      const statusClass = check.statusClass(isOk);
-      
-      const item = document.createElement('div');
-      item.className = `session-toast-item ${statusClass}`;
-      item.innerHTML = `
-        <div class="session-toast-item-left">
-          <span class="session-toast-item-icon">${isOk ? '✅' : statusClass === 'error' ? '❌' : '⚠️'}</span>
-          <div>
-            <div class="session-toast-item-name">${check.icon} ${check.name}</div>
-            <div class="session-toast-item-status">${check.statusText(isOk)}</div>
-          </div>
-        </div>
-        ${!isOk && check.url ? `
-          <div class="session-toast-item-action">
-            <a href="${check.url}" target="_blank">Buka →</a>
-          </div>
-        ` : ''}
-      `;
-      content.appendChild(item);
-    }
-
-    toast.classList.add('active');
-
-    // Auto-dismiss after 15 seconds
-    const autoDismiss = setTimeout(() => {
-      toast.classList.remove('active');
-    }, 15000);
-
-    // Event listeners
-    const closeBtn = document.getElementById('sessionToastClose');
-    const openAllBtn = document.getElementById('sessionToastOpenAll');
-
-    const dismissToast = () => {
-      clearTimeout(autoDismiss);
-      toast.classList.remove('active');
-    };
-    
-    closeBtn?.addEventListener('click', dismissToast, { once: true });
-    
-    openAllBtn?.addEventListener('click', () => {
-      for (const [key, check] of Object.entries(checks)) {
-        if (!results[key] && check.url) {
-          window.open(check.url, '_blank');
-        }
-      }
-    }, { once: true });
-  }
-
-  // ===== FLOATING STATUS CARD =====
-
-  /**
-   * Show floating status card with status checks
-   */
-  async showFloatingStatusCard() {
-    const card = this.elements.floatingStatusCard;
-    if (!card) return;
-
-    const checks = [
-      {
-        id: 'cookies',
-        name: 'Cookies',
-        check: async () => {
-          return new Promise((resolve) => {
-            chrome.cookies.get({ url: 'https://fasih-sm.bps.go.id', name: 'XSRF-TOKEN' }, (cookie) => {
-              resolve(!!cookie && cookie.value);
-            });
-          });
-        },
-        successMsg: 'OK',
-        failMsg: 'No cookies'
-      },
-      {
-        id: 'jwt',
-        name: 'JWT Token',
-        check: async () => {
-          const jwt = await mitraService.getJwtToken();
-          return !!jwt;
-        },
-        successMsg: 'OK',
-        failMsg: 'No JWT'
-      },
-      {
-        id: 'niplama',
-        name: 'NIP Lama',
-        check: async () => {
-          return new Promise((resolve) => {
-            chrome.cookies.get({ url: 'https://community.bps.go.id', name: 'CommunityBPS' }, (cookie) => {
-              if (cookie && cookie.value) {
-                const niplama = cookie.value.substring(0, 9);
-                resolve(/^\d{9}$/.test(niplama));
-              } else {
-                resolve(false);
-              }
-            });
-          });
-        },
-        successMsg: 'OK',
-        failMsg: 'Invalid'
-      },
-      {
-        id: 'avatar',
-        name: 'Avatar',
-        check: async () => {
-          const avatar = document.getElementById('userAvatarSidebar');
-          return avatar && avatar.src && !avatar.src.includes('profile.png') && !avatar.src.includes('icon128');
-        },
-        successMsg: 'OK',
-        failMsg: 'Default'
-      },
-      {
-        id: 'session',
-        name: 'FASIH Session',
-        check: async () => {
-          try {
-            return await authService.checkLogin();
-          } catch {
-            return false;
-          }
-        },
-        successMsg: 'Active',
-        failMsg: 'Offline'
-      }
-    ];
-
-    const items = await Promise.all(checks.map(async (c) => ({
-      ...c,
-      ok: await c.check()
-    })));
-
-    const container = document.getElementById('floatingStatusItems');
-    if (container) {
-      container.innerHTML = items.map(i => `
-        <div class="floating-status-item ${i.ok ? 'success' : 'warning'}">
-          <div class="floating-status-item-left">
-            <span class="floating-status-icon">${i.ok ? '✅' : '⚠️'}</span>
-            <span class="floating-status-name">${i.name}</span>
-          </div>
-          <span class="floating-status-msg">${i.ok ? i.successMsg : i.failMsg}</span>
-        </div>
-      `).join('');
-    }
-
-    const hasFailures = items.some(i => !i.ok);
-    if (hasFailures) {
-      card.style.display = 'block';
-      // Auto-hide after 10 seconds
-      setTimeout(() => {
-        if (card) card.style.display = 'none';
-      }, 10000);
-    }
-  }
-
-  /**
-   * Close floating status card
-   */
-  closeFloatingStatusCard() {
-    if (this.elements.floatingStatusCard) {
-      this.elements.floatingStatusCard.style.display = 'none';
-    }
-  }
-
-  // ===== MITRA KEPKA SEARCH =====
-
-  /**
-   * Filter Mitra KEPKA table based on search input
-   */
   filterMitraKepka(query) {
     const lowerQuery = (query || '').toLowerCase();
     if (this.mitraKepkaData.length === 0) return;
@@ -2066,7 +1732,6 @@ class App {
              posisi.toLowerCase().includes(lowerQuery);
     });
 
-    const isDetail = this.selectedMitraMode === 'detail';
     if (this.elements.mitraKepkaTableBody) {
       if (filtered.length === 0) {
         this.elements.mitraKepkaTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Tidak ada hasil pencarian</td></tr>';
@@ -2091,8 +1756,6 @@ class App {
     }
   }
 
-  // ===== PREFERENCES =====
-
   loadPreferences() {
     const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
     if (savedTheme === 'dark') {
@@ -2112,7 +1775,6 @@ class App {
 // Initialize app
 const app = new App();
 
-// Start the app after DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   Logger.info('[App] DOMContentLoaded fired, initializing app...');
   app.init().catch(err => {
