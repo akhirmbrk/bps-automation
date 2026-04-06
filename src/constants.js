@@ -190,6 +190,28 @@ export const TABLE_CONSTANTS = {
   AKUN_MITRA_FETCH_ALL: 9999 // Magic number for fetching all records
 };
 
+// DOM Element IDs
+export const DOM_IDS = {
+  // Navigation
+  CHECK_SESSION_BTN: 'checkSessionBtn',
+  // Loading Steps
+  LOADING_STEP_INIT: 'step-init',
+  LOADING_STEP_AUTH: 'step-auth',
+  LOADING_STEP_SURVEYS: 'step-surveys',
+  // Session Toast
+  SESSION_TOAST: 'sessionToast',
+  SESSION_TOAST_CONTENT: 'sessionToastContent',
+  SESSION_TOAST_CLOSE: 'sessionToastClose',
+  SESSION_TOAST_OPEN_ALL: 'sessionToastOpenAll'
+};
+
+// File Download Formats
+export const DOWNLOAD_FORMATS = {
+  CSV: 'csv',
+  EXCEL: 'excel',
+  DELAY_MS: 3000 // Delay before hiding progress UI
+};
+
 // Status/Session Check Configuration
 export const SESSION_CHECKS = [
   { key: 'fasih', name: 'FASIH', url: 'https://fasih-sm.bps.go.id', icon: '📊' },

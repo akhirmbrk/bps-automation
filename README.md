@@ -42,54 +42,66 @@ Ekstensi Chromium untuk otomatisasi ekstraksi data dari portal FASIH BPS dan Man
 - Terminal log dengan warna
 - Profile image dari community.bps.go.id
 
-## 📁 Struktur Proyek
+## 🏗️ Arsitektur
+
+Proyek ini menggunakan arsitektur modular ES6 dengan pattern:
+- **Event Bus** untuk komunikasi antar modul (pub/sub)
+- **Singleton Services** untuk state management
+- **Configuration Manager** untuk centralized settings
 
 ```
-extension/
+bps-automation/
 ├── manifest.json          # Chrome extension manifest v3
-├── background.js          # Service worker
-├── dashboard.html         # Main UI (v5.0)
-├── main.css               # Styles
-├── xlsx.full.min.js       # Excel library
-├── README.md              # Dokumentasi
-├── icons/                 # Extension icons
-└── src/                   # Source code (ES modules)
-    ├── index.js           # Entry point
-    ├── app.js             # Application controller
-    ├── constants.js       # Constants & config
-    ├── core/              # Core modules
-    │   ├── api-client.js  # HTTP client + retry
-    │   ├── config.js      # Config manager
-    │   ├── event-bus.js   # Event system
-    │   ├── logger.js      # Logging
-    │   ├── utils.js       # Utilities
-    │   └── index.js       # Core exports
+├── background.js          # Service worker (messaging, cookies)
+├── dashboard.html         # Main UI dashboard
+├── main.css               # Stylesheet (~2675 lines)
+├── xlsx.full.min.js       # SheetJS library for Excel export
+├── README.md              # This documentation
+├── .gitignore             # Git ignore rules
+├── content/
+│   └── mitra-jwt-inject.js  # Content script for JWT extraction
+├── icons/                 # Extension icons (16/48/128px + profile)
+└── src/                   # ES6 modules
+    ├── app.js             # Main application controller
+    ├── constants.js       # Centralized constants & config
+    ├── core/              # Core infrastructure modules
+    │   ├── api-client.js  # HTTP client with retry & auth
+    │   ├── config.js      # Configuration manager
+    │   ├── event-bus.js   # Pub/sub event system
+    │   ├── logger.js      # Centralized logging
+    │   ├── utils.js       # Utility functions
+    │   └── index.js       # Core module exports
     ├── modules/           # Feature modules
-    │   ├── auth/          # Authentication
-    │   ├── surveys/       # Survey management
-    │   ├── scraper/       # Data extraction
-    │   ├── exporter/      # CSV/Excel export
-    │   ├── allocation/    # User allocation
-    │   └── mitra/         # Manajemen Mitra (NEW!)
-    │       ├── index.js
-    │       └── mitra-service.js
+    │   ├── auth/          # FASIH authentication
+    │   ├── surveys/       # Survey loading & management
+    │   ├── scraper/       # Data extraction engine
+    │   ├── exporter/      # CSV/Excel/JSON export
+    │   ├── allocation/    # User allocation service
+    │   └── mitra/         # Manajemen Mitra API service
     └── storage/
-        └── history-cache.js # History storage
+        └── history-cache.js  # Cached scraping history with TTL
 ```
+
+## 📋 Prerequisites
+
+- **Browser**: Chrome 88+ atau Edge 88+ (Chromium-based)
+- **Access**: Login ke FASIH dan Manajemen Mitra BPS
+- **Network**: Koneksi ke `*.bps.go.id`
 
 ## 🔧 Instalasi
 
-### Development
-1. Buka `chrome://extensions/` di Chrome/Edge
-2. Aktifkan **Developer mode** (toggle kanan atas)
-3. Klik **Load unpacked**
-4. Pilih folder `extension/`
-5. Ekstensi akan muncul di toolbar (ikon puzzle piece)
+### Production (Load Extension)
+1. Clone atau download repository ini
+2. Buka `chrome://extensions/` di Chrome/Edge
+3. Aktifkan **Developer mode** (toggle kanan atas)
+4. Klik **Load unpacked**
+5. Pilih folder repository ini (yang berisi `manifest.json`)
+6. Ekstensi akan muncul di toolbar (ikon puzzle piece)
 
 ### Setelah Install
 1. Login ke https://fasih-sm.bps.go.id di browser
 2. Login ke https://manajemen-mitra.bps.go.id (untuk fitur Mitra)
-3. Klik icon BPS AUTOMATION di toolbar
+3. Klik icon **BPS AUTOMATION** di toolbar
 4. Dashboard akan terbuka di tab baru
 
 ## 📖 Cara Penggunaan
@@ -279,11 +291,36 @@ Pastikan kode region di template Excel sesuai:
 - Progress tracking
 - Overwrite/Direct Assign options
 
+## 🔒 Security Notes
+
+- JWT token disimpan di `chrome.storage.local` (encrypted by Chromium)
+- Tidak ada credentials hardcoded di source code
+- Cookie XSRF-TOKEN diambil dari browser session
+- Rate limiting implemented untuk mencegah API abuse
+
+## 🧪 Development
+
+### Project Structure
+- Semua modul menggunakan ES6+ syntax
+- Service pattern dengan singleton instances
+- Event-driven architecture menggunakan EventBus
+
+### Key Patterns
+```javascript
+// Module imports
+import { eventBus } from './core/event-bus.js';
+import { authService } from './modules/auth/index.js';
+
+// Event emission
+eventBus.emit('scraper:complete', { totalRecords: 100 });
+
+// Event subscription
+eventBus.on('scraper:complete', (data) => { ... });
+```
+
 ## 👨‍💻 Developer
 
 **BPS Kabupaten Kutai Kartanegara**
-
-Untuk bug report atau feature request, silakan hubungi developer.
 
 ## 📄 License
 
