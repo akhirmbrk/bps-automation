@@ -14,6 +14,9 @@ import { ExporterService } from './modules/exporter/index.js';
 import { allocationService } from './modules/allocation/index.js';
 import { mitraService } from './modules/mitra/index.js';
 import { HistoryCache } from './storage/history-cache.js';
+import { MitraManager } from './ui/mitra-manager.js';
+import { HistoryManager } from './ui/history-manager.js';
+import { SessionManager } from './ui/session-manager.js';
 import {
   PAGES,
   PAGE_TITLES,

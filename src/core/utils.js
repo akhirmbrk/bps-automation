@@ -91,11 +91,12 @@ export const escapeHtml = (text) => {
 };
 
 /**
- * Deep clone an object
- * @param {Object} obj - Object to clone
- * @returns {Object} Cloned object
+ * Deep clone an object using native structuredClone
+ * @template T
+ * @param {T} obj - Object to clone
+ * @returns {T} Cloned object
  */
-export const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
+export const deepClone = (obj) => structuredClone(obj);
 
 /**
  * Generate a random ID
