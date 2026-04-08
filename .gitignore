@@ -15,9 +15,17 @@ build/
 .DS_Store
 Thumbs.db
 
+# Environment / secrets
+.env
+.env.*
+*.pem
+
 # Extension storage data
 *.storage.json
 
 # Logs
 *.log
 npm-debug.log*
+
+# Coverage
+coverage/

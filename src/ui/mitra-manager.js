@@ -120,16 +120,16 @@ class MitraManager {
     const tbody = this.elements.mitraHistoryTableBody;
     if (!tbody) return;
     if (history.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Tidak ada riwayat survei</td></tr>';
+      tbody.innerHTML = '<tr><td colspan=\"6\" class=\"text-center text-muted\">Tidak ada riwayat survei</td></tr>';
     } else {
       tbody.innerHTML = history.map(h => `
         <tr>
-          <td>${h.kd_survei || '-'}</td>
-          <td>${h.nama_survei || '-'}</td>
-          <td>${h.nama_keg || '-'}</td>
-          <td>${h.nama_pos || '-'}</td>
-          <td>${h.nama_status || '-'}</td>
-          <td>${h.nama_kab ? `${h.nama_kab}, ${h.nama_prov}` : '-'}</td>
+          <td>${esc(h.kd_survei)}</td>
+          <td>${esc(h.nama_survei)}</td>
+          <td>${esc(h.nama_keg)}</td>
+          <td>${esc(h.nama_pos)}</td>
+          <td>${esc(h.nama_status)}</td>
+          <td>${h.nama_kab ? `${esc(h.nama_kab)}, ${esc(h.nama_prov)}` : '-'}</td>
         </tr>
       `).join('');
     }
@@ -339,7 +339,7 @@ class MitraManager {
       }
     } catch (err) {
       if (loadingEl) loadingEl.style.display = 'none';
-      if (tableBody) tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Error: ${err.message}</td></tr>`;
+      if (tableBody) tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Error: ${esc(err.message)}</td></tr>`;
       Logger.error('[MitraManager] Failed to load akun mitra:', err.message);
     }
   }
@@ -451,7 +451,7 @@ class MitraManager {
       try {
         const detail = await mitraService.getMitraDetail(idMitra);
         if (detail) allDetail.push(detail);
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, mitraService.rateLimitMs));
       } catch (err) {
         this.log(`⚠️ Gagal mengambil detail ID ${idMitra}: ${err.message}`, 'warning');
       }

@@ -40,6 +40,7 @@ class AllocationService {
           const json = window.XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
           // Normalize column names
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           const normalized = json.map(row => ({
             provinsi: String(row['PROVINSI'] || row['provinsi'] || '').padStart(2, '0'),
             kabupaten: String(row['KABUPATEN'] || row['KABUPATEN/KOTA'] || row['kabupaten'] || '').padStart(2, '0'),
@@ -48,7 +49,7 @@ class AllocationService {
             sls: String(row['SLS'] || row['sls'] || '').padStart(4, '0'),
             subsls: String(row['SUBSLS'] || row['SUBSLS'] || row['subsls'] || '').padStart(2, '0'),
             email: String(row['Email'] || row['Email Pencacah'] || row['email'] || '').trim()
-          })).filter(r => r.email && r.provinsi && r.kabupaten);
+          })).filter(r => r.email && emailRegex.test(r.email) && r.provinsi && r.kabupaten);
 
           resolve(normalized);
         } catch (err) {
