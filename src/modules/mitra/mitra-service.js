@@ -5,6 +5,7 @@
 
 import { Logger } from '../../core/logger.js';
 import { eventBus } from '../../core/event-bus.js';
+import { sleep } from '../../core/utils.js';
 
   class MitraService {
   constructor() {
@@ -22,15 +23,6 @@ import { eventBus } from '../../core/event-bus.js';
     this.selectedMitraId = null;
     this.cachedJwtToken = null;
     this.rateLimitMs = 1000; // 1 second delay between requests (matching Python time.sleep(1))
-  }
-
-  /**
-   * Sleep helper function (matching Python time.sleep)
-   * @param {number} ms - Milliseconds to sleep
-   * @returns {Promise<void>}
-   */
-  async sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**

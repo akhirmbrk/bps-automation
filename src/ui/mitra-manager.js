@@ -5,6 +5,14 @@
 
 import { Logger } from '../core/logger.js';
 import { mitraService } from '../modules/mitra/index.js';
+import { TABLE_CONSTANTS } from '../constants.js';
+
+/** Escape HTML to prevent XSS */
+function esc(val) {
+  if (val == null) return '-';
+  const s = String(val);
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
 
 class MitraManager {
   /**
@@ -38,13 +46,13 @@ class MitraManager {
     }
     tbody.innerHTML = this.app.mitraKepkaData.slice(0, 100).map(m => `
       <tr>
-        <td>${m.mitra_detail?.nik || '-'}</td>
-        <td>${m.mitra_detail?.nama_lengkap || '-'}</td>
-        <td>${m.mitra_detail?.email || '-'}</td>
-        <td>${m.nama_pos || '-'}</td>
-        <td>${m.ket_status || '-'}</td>
+        <td>${esc(m.mitra_detail?.nik)}</td>
+        <td>${esc(m.mitra_detail?.nama_lengkap)}</td>
+        <td>${esc(m.mitra_detail?.email)}</td>
+        <td>${esc(m.nama_pos)}</td>
+        <td>${esc(m.ket_status)}</td>
         <td>
-          <button class="btn btn-sm btn-primary mitra-detail-btn" data-id="${m.id_mitra}">Detail</button>
+          <button class="btn btn-sm btn-primary mitra-detail-btn" data-id="${esc(m.id_mitra)}">Detail</button>
         </td>
       </tr>
     `).join('');
@@ -72,33 +80,33 @@ class MitraManager {
     
     if (this.elements.mitraDetailBody) {
       this.elements.mitraDetailBody.innerHTML = `
-        <div class="detail-row"><span class="detail-label">ID Mitra</span><span class="detail-value">${detail.idmitra || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">NIK</span><span class="detail-value">${detail.nik || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Nama Lengkap</span><span class="detail-value">${detail.nama_lengkap || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Username</span><span class="detail-value">${detail.username || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${detail.email || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">No. Telepon</span><span class="detail-value">${detail.no_telp || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${detail.status || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">NPWP</span><span class="detail-value">${detail.npwp || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Alamat</span><span class="detail-value">${detail.alamat_detail || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Provinsi</span><span class="detail-value">${detail.alamat_prov || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Kabupaten</span><span class="detail-value">${detail.alamat_kab || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Kecamatan</span><span class="detail-value">${detail.alamat_kec || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Desa</span><span class="detail-value">${detail.alamat_desa || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Tanggal Lahir</span><span class="detail-value">${detail.tgl_lahir || '-'}</span></div>
+        <div class="detail-row"><span class="detail-label">ID Mitra</span><span class="detail-value">${esc(detail.idmitra)}</span></div>
+        <div class="detail-row"><span class="detail-label">NIK</span><span class="detail-value">${esc(detail.nik)}</span></div>
+        <div class="detail-row"><span class="detail-label">Nama Lengkap</span><span class="detail-value">${esc(detail.nama_lengkap)}</span></div>
+        <div class="detail-row"><span class="detail-label">Username</span><span class="detail-value">${esc(detail.username)}</span></div>
+        <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${esc(detail.email)}</span></div>
+        <div class="detail-row"><span class="detail-label">No. Telepon</span><span class="detail-value">${esc(detail.no_telp)}</span></div>
+        <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${esc(detail.status)}</span></div>
+        <div class="detail-row"><span class="detail-label">NPWP</span><span class="detail-value">${esc(detail.npwp)}</span></div>
+        <div class="detail-row"><span class="detail-label">Alamat</span><span class="detail-value">${esc(detail.alamat_detail)}</span></div>
+        <div class="detail-row"><span class="detail-label">Provinsi</span><span class="detail-value">${esc(detail.alamat_prov)}</span></div>
+        <div class="detail-row"><span class="detail-label">Kabupaten</span><span class="detail-value">${esc(detail.alamat_kab)}</span></div>
+        <div class="detail-row"><span class="detail-label">Kecamatan</span><span class="detail-value">${esc(detail.alamat_kec)}</span></div>
+        <div class="detail-row"><span class="detail-label">Desa</span><span class="detail-value">${esc(detail.alamat_desa)}</span></div>
+        <div class="detail-row"><span class="detail-label">Tanggal Lahir</span><span class="detail-value">${esc(detail.tgl_lahir)}</span></div>
         <div class="detail-row"><span class="detail-label">Jenis Kelamin</span><span class="detail-value">${detail.jns_kelamin === '1' ? 'Laki-laki' : detail.jns_kelamin === '2' ? 'Perempuan' : '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Agama</span><span class="detail-value">${detail.agama || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Status Kawin</span><span class="detail-value">${detail.status_kawin || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Pendidikan</span><span class="detail-value">${detail.pendidikan || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Pekerjaan</span><span class="detail-value">${detail.pekerjaan || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Bank</span><span class="detail-value">${detail.kd_bank || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">No. Rekening</span><span class="detail-value">${detail.rekening || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Nama Rekening</span><span class="detail-value">${detail.rekening_nama || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Merk HP</span><span class="detail-value">${detail.merk_hp || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Tipe HP</span><span class="detail-value">${detail.tipe_hp || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">RAM HP</span><span class="detail-value">${detail.ram_hp || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Catatan</span><span class="detail-value">${detail.catatan || '-'}</span></div>
-        <div class="detail-row"><span class="detail-label">Sobat ID</span><span class="detail-value">${detail.sobat_id || '-'}</span></div>
+        <div class="detail-row"><span class="detail-label">Agama</span><span class="detail-value">${esc(detail.agama)}</span></div>
+        <div class="detail-row"><span class="detail-label">Status Kawin</span><span class="detail-value">${esc(detail.status_kawin)}</span></div>
+        <div class="detail-row"><span class="detail-label">Pendidikan</span><span class="detail-value">${esc(detail.pendidikan)}</span></div>
+        <div class="detail-row"><span class="detail-label">Pekerjaan</span><span class="detail-value">${esc(detail.pekerjaan)}</span></div>
+        <div class="detail-row"><span class="detail-label">Bank</span><span class="detail-value">${esc(detail.kd_bank)}</span></div>
+        <div class="detail-row"><span class="detail-label">No. Rekening</span><span class="detail-value">${esc(detail.rekening)}</span></div>
+        <div class="detail-row"><span class="detail-label">Nama Rekening</span><span class="detail-value">${esc(detail.rekening_nama)}</span></div>
+        <div class="detail-row"><span class="detail-label">Merk HP</span><span class="detail-value">${esc(detail.merk_hp)}</span></div>
+        <div class="detail-row"><span class="detail-label">Tipe HP</span><span class="detail-value">${esc(detail.tipe_hp)}</span></div>
+        <div class="detail-row"><span class="detail-label">RAM HP</span><span class="detail-value">${esc(detail.ram_hp)}</span></div>
+        <div class="detail-row"><span class="detail-label">Catatan</span><span class="detail-value">${esc(detail.catatan)}</span></div>
+        <div class="detail-row"><span class="detail-label">Sobat ID</span><span class="detail-value">${esc(detail.sobat_id)}</span></div>
       `;
     }
     
@@ -164,12 +172,12 @@ class MitraManager {
     }
     tbody.innerHTML = this.app.mitraScrapData.slice(0, 100).map(m => `
       <tr>
-        <td>${m.nik || '-'}</td>
-        <td>${m.nama_lengkap || '-'}</td>
-        <td>${m.email || '-'}</td>
-        <td>${m.posisi || '-'}</td>
-        <td>${m.status || '-'}</td>
-        <td>${m.alamat || '-'}</td>
+        <td>${esc(m.nik)}</td>
+        <td>${esc(m.nama_lengkap)}</td>
+        <td>${esc(m.email)}</td>
+        <td>${esc(m.posisi)}</td>
+        <td>${esc(m.status)}</td>
+        <td>${esc(m.alamat)}</td>
       </tr>
     `).join('');
     if (this.elements.mitraScrapStats) {
@@ -225,13 +233,13 @@ class MitraManager {
     }
     tbody.innerHTML = this.app.seleksiData.slice(0, 100).map(m => `
       <tr>
-        <td>${m.nik || '-'}</td>
-        <td>${m.nama_lengkap || '-'}</td>
-        <td>${m.email || '-'}</td>
-        <td>${m.posisi || '-'}</td>
-        <td>${m.ket_status || '-'}</td>
+        <td>${esc(m.nik)}</td>
+        <td>${esc(m.nama_lengkap)}</td>
+        <td>${esc(m.email)}</td>
+        <td>${esc(m.posisi)}</td>
+        <td>${esc(m.ket_status)}</td>
         <td>
-          <button class="btn btn-sm btn-primary seleksi-detail-btn" data-id="${m.id}">Detail</button>
+          <button class="btn btn-sm btn-primary seleksi-detail-btn" data-id="${esc(m.id)}">Detail</button>
         </td>
       </tr>
     `).join('');
@@ -264,10 +272,10 @@ class MitraManager {
     }
     tbody.innerHTML = mitraService.akunMitraData.map(m => `
       <tr>
-        <td>${m.username || '-'}</td>
-        <td>${m.email || '-'}</td>
-        <td>${m.nama_lengkap || '-'}</td>
-        <td>${m.nik || '-'}</td>
+        <td>${esc(m.username)}</td>
+        <td>${esc(m.email)}</td>
+        <td>${esc(m.nama_lengkap)}</td>
+        <td>${esc(m.nik)}</td>
         <td>${m.status === '1' ? 'Aktif' : 'Nonaktif'}</td>
         <td>${m.created_at ? new Date(m.created_at).toLocaleDateString('id-ID') : '-'}</td>
       </tr>
@@ -318,7 +326,7 @@ class MitraManager {
     if (loadingEl) loadingEl.style.display = 'block';
     if (tableBody) tableBody.innerHTML = '';
     try {
-      const allData = await mitraService.getAkunMitra(1, 9999);
+      const allData = await mitraService.getAkunMitra(1, TABLE_CONSTANTS.AKUN_MITRA_FETCH_ALL);
       this.app.akunMitraAllData = allData;
       if (loadingEl) loadingEl.style.display = 'none';
       if (allData.length > 0) {
@@ -345,10 +353,10 @@ class MitraManager {
     }
     tbody.innerHTML = data.map(m => `
       <tr>
-        <td>${m.username || '-'}</td>
-        <td>${m.email || '-'}</td>
-        <td>${m.nama_lengkap || '-'}</td>
-        <td>${m.nik || '-'}</td>
+        <td>${esc(m.username)}</td>
+        <td>${esc(m.email)}</td>
+        <td>${esc(m.nama_lengkap)}</td>
+        <td>${esc(m.nik)}</td>
         <td>${m.status === '1' ? 'Aktif' : 'Nonaktif'}</td>
         <td>${m.created_at ? new Date(m.created_at).toLocaleDateString('id-ID') : '-'}</td>
       </tr>
@@ -392,13 +400,13 @@ class MitraManager {
     }
     tbody.innerHTML = filtered.slice(0, 100).map(m => `
       <tr>
-        <td>${m.mitra_detail?.nik || '-'}</td>
-        <td>${m.mitra_detail?.nama_lengkap || '-'}</td>
-        <td>${m.mitra_detail?.email || '-'}</td>
-        <td>${m.nama_pos || '-'}</td>
-        <td>${m.ket_status || '-'}</td>
+        <td>${esc(m.mitra_detail?.nik)}</td>
+        <td>${esc(m.mitra_detail?.nama_lengkap)}</td>
+        <td>${esc(m.mitra_detail?.email)}</td>
+        <td>${esc(m.nama_pos)}</td>
+        <td>${esc(m.ket_status)}</td>
         <td>
-          <button class="btn btn-sm btn-primary mitra-detail-btn" data-id="${m.id_mitra}">Detail</button>
+          <button class="btn btn-sm btn-primary mitra-detail-btn" data-id="${esc(m.id_mitra)}">Detail</button>
         </td>
       </tr>
     `).join('');

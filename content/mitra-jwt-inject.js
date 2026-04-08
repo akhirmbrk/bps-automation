@@ -237,16 +237,18 @@
 
   /**
    * Listen for messages from extension
+   * Only respond to messages from the expected origin
    */
   window.addEventListener('message', (event) => {
     if (event.source !== window) return;
+    if (event.origin !== window.location.origin) return;
     if (event.data && event.data.action === 'GET_JWT_TOKEN') {
       // Respond with last captured token if available
       if (lastCapturedToken) {
         event.source.postMessage({
           action: 'JWT_TOKEN_RESPONSE',
           token: lastCapturedToken
-        }, '*');
+        }, window.location.origin);
       }
     }
   });

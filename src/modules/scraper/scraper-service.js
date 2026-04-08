@@ -327,10 +327,12 @@ class ScraperService {
         return [];
       }
 
-      // Count total desa
+      // Load desa for each kecamatan and count total
+      const kecDesaMap = new Map();
       let totalDesa = 0;
       for (const kec of kecamatans) {
         const desas = await this.loadLevel4(archInfo.groupId, kec.id);
+        kecDesaMap.set(kec.id, desas);
         totalDesa += desas.length;
       }
 
@@ -342,9 +344,9 @@ class ScraperService {
 
       for (const kec of kecamatans) {
         if (!this.isRunning) break;
-        
+
         kecCount++;
-        const desas = await this.loadLevel4(archInfo.groupId, kec.id);
+        const desas = kecDesaMap.get(kec.id) || [];
         if (desas.length === 0) continue;
 
         const kecCode = kec.code || kec.fullCode || '-';

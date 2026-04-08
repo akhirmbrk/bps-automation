@@ -8,6 +8,12 @@ import { ExporterService } from '../modules/exporter/index.js';
 import { utils } from '../core/utils.js';
 import { HISTORY_CONFIG } from '../constants.js';
 
+/** Escape HTML to prevent XSS */
+function esc(val) {
+  if (val == null) return '-';
+  return String(val).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 class HistoryManager {
   /**
    * @param {App} app
@@ -36,15 +42,15 @@ class HistoryManager {
       return `
         <div class="history-item">
           <div class="history-info">
-            <strong>${h.survey}</strong>
-            <small>${h.date} | Mode: ${h.mode} | ${h.records} records | ${sizeStr}</small>
+            <strong>${esc(h.survey)}</strong>
+            <small>${esc(h.date)} | Mode: ${esc(h.mode)} | ${h.records} records | ${sizeStr}</small>
             <span class="history-countdown ${isExpired ? 'expired' : ''}" data-timestamp="${h.timestamp}">
               ${isExpired ? 'File kadaluwarsa' : 'File kadaluwarsa dalam ' + this.getRemainingTime(h.timestamp)}
             </span>
           </div>
           <div class="history-actions">
-            <button class="btn btn-success btn-sm ${isExpired ? 'expired' : ''}" data-id="${h.id}" data-type="csv" ${isExpired ? 'disabled' : ''}>CSV</button>
-            <button class="btn btn-info btn-sm ${isExpired ? 'expired' : ''}" data-id="${h.id}" data-type="excel" ${isExpired ? 'disabled' : ''}>Excel</button>
+            <button class="btn btn-success btn-sm ${isExpired ? 'expired' : ''}" data-id="${esc(h.id)}" data-type="csv" ${isExpired ? 'disabled' : ''}>CSV</button>
+            <button class="btn btn-info btn-sm ${isExpired ? 'expired' : ''}" data-id="${esc(h.id)}" data-type="excel" ${isExpired ? 'disabled' : ''}>Excel</button>
           </div>
         </div>
       `;

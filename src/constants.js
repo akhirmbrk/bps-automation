@@ -156,7 +156,7 @@ export const RETRY_CONFIG = {
 
 // Time Constants (milliseconds)
 export const TIME_CONSTANTS = {
-  HISTORY_TTL_MS: 10 * 60 * 1000, // 10 minutes
+  HISTORY_TTL_MS: HISTORY_CONFIG.TTL_MS, // Reuse HISTORY_CONFIG.TTL_MS
   HISTORY_COUNTDOWN_CHECK_MS: 1000, // 1 second
   SESSION_CHECK_DELAY_MS: 1500, // 1.5 seconds
   JWT_STATUS_CHECK_DELAY_MS: 1000, // 1 second

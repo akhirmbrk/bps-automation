@@ -43,7 +43,7 @@
     }
   ],
   "web_accessible_resources": [{
-    "resources": ["src/*", "xlsx.full.min.js", "content/*"],
+    "resources": ["xlsx.full.min.js", "content/mitra-jwt-inject.js"],
     "matches": [
       "*://fasih-sm.bps.go.id/*",
       "*://manajemen-mitra.bps.go.id/*",
