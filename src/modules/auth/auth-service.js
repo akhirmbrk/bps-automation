@@ -19,6 +19,9 @@ class AuthService {
    * @returns {Promise<boolean>} True if logged in
    */
   async checkLogin() {
+    // Return cached result if already verified this session
+    if (this.isLoggedIn && this.userInfo) return true;
+
     try {
       const url = apiClient.buildUrl('survey', API_ENDPOINTS.USER_INFO);
       const data = await apiClient.get(url, 'Check Login');

@@ -25,6 +25,8 @@ class SessionManager {
         url: 'https://fasih-sm.bps.go.id',
         icon: '📊',
         check: async () => {
+          // Use cached login state from init() instead of re-calling API
+          if (authService.isLoggedIn) return true;
           try { return await authService.checkLogin(); } catch { return false; }
         },
         statusText: (ok) => ok ? 'Login aktif' : 'Belum login',
