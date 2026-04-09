@@ -102,7 +102,12 @@ export const deepClone = (obj) => structuredClone(obj);
  * Generate a random ID
  * @returns {string} Random ID
  */
-export const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
+export const generateId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return '_' + Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
+};
 
 /**
  * Check if a value is empty

@@ -98,3 +98,11 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.storage.local.clear();
   }
 });
+
+// Service Worker Keepalive — prevents MV3 from killing the worker during long operations
+chrome.alarms.create('keepalive', { periodInMinutes: 4 });
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'keepalive') {
+    // No-op — just keeps the service worker alive
+  }
+});

@@ -1,13 +1,13 @@
 /**
- * BPS Automation v5.0 - Mitra Service
+ * BPS Automation v5.1.0 - Mitra Service
  * Handles all Manajemen Mitra API interactions with JWT Bearer token
+ * Export functions consolidated into ExporterService
  */
 
 import { Logger } from '../../core/logger.js';
 import { eventBus } from '../../core/event-bus.js';
-import { sleep } from '../../core/utils.js';
 
-  class MitraService {
+class MitraService {
   constructor() {
     this.baseUrl = 'https://mitra-api.bps.go.id';
     this.penggunaBaseUrl = 'https://mitra-pengguna-api.bps.go.id';
@@ -135,25 +135,6 @@ import { sleep } from '../../core/utils.js';
     } catch (err) {
       // Silent fallback - kabupaten is optional, keep default kdKab
       Logger.info('[Mitra] Kabupaten API unavailable, keeping default kdKab');
-      return [];
-    }
-  }
-
-  /**
-   * Get Kecamatan list (RE list)
-   */
-  async getKecamatan(kdProv, kdKab) {
-    try {
-      const headers = await this.buildHeaders();
-      const response = await fetch(`${this.penggunaBaseUrl}/api/wilayah/re/list/${kdProv}/${kdKab}`, {
-        credentials: 'include',
-        headers
-      });
-      await this.handleResponseError(response);
-      const data = await response.json();
-      return data.rekList || [];
-    } catch (err) {
-      Logger.error('Failed to get kecamatan:', err.message);
       return [];
     }
   }
@@ -402,157 +383,6 @@ import { sleep } from '../../core/utils.js';
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-  }
-
-  /**
-   * Export Mitra KEPKA to CSV
-   */
-  exportKepkaToCSV(data, filename) {
-    if (!data || data.length === 0) return;
-    const headers = ['NIK', 'Nama Lengkap', 'Email', 'Posisi', 'Status', 'Kabupaten', 'Provinsi'];
-    const rows = data.map(m => [
-      m.mitra_detail?.nik || '-',
-      m.mitra_detail?.nama_lengkap || '-',
-      m.mitra_detail?.email || '-',
-      m.nama_pos || '-',
-      m.ket_status || '-',
-      m.kd_kab || '-',
-      m.kd_prov || '-'
-    ]);
-    const csvContent = [headers.join(','), ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))].join('\n');
-    this.downloadFile(csvContent, `${filename}_kepka.csv`, 'text/csv');
-  }
-
-  /**
-   * Export Mitra KEPKA to Excel
-   */
-  exportKepkaToExcel(data, filename) {
-    if (!data || data.length === 0) return;
-    const rows = data.map(m => ({
-      'NIK': m.mitra_detail?.nik || '-',
-      'Nama Lengkap': m.mitra_detail?.nama_lengkap || '-',
-      'Email': m.mitra_detail?.email || '-',
-      'Posisi': m.nama_pos || '-',
-      'Status': m.ket_status || '-',
-      'Kabupaten': m.kd_kab || '-',
-      'Provinsi': m.kd_prov || '-'
-    }));
-    const ws = window.XLSX?.utils.json_to_sheet(rows);
-    if (!ws) return;
-    const wb = window.XLSX?.utils.book_new();
-    window.XLSX?.utils.book_append_sheet(wb, ws, 'Mitra KEPKA');
-    window.XLSX?.writeFile(wb, `${filename}_kepka.xlsx`);
-  }
-
-  /**
-   * Export Mitra KEPKA Detail (more fields than Basic)
-   */
-  exportKepkaDetailToCSV(data, filename) {
-    if (!data || data.length === 0) return;
-    const headers = ['NIK', 'Nama Lengkap', 'Email', 'No Telp', 'Alamat', 'Kota', 'Provinsi', 'Kabupaten', 'Kecamatan', 'Posisi', 'Status', 'Pendidikan', 'Pengalaman', 'Tanggal Daftar'];
-    const rows = data.map(m => {
-      const d = m.mitra_detail || {};
-      return [
-        d.nik || '-',
-        d.nama_lengkap || '-',
-        d.email || '-',
-        d.no_telp || '-',
-        d.alamat || '-',
-        d.kota || '-',
-        d.provinsi || '-',
-        d.kabupaten || '-',
-        d.kecamatan || '-',
-        m.nama_pos || '-',
-        m.ket_status || '-',
-        d.pendidikan || '-',
-        d.pengalaman || '-',
-        m.created_at ? new Date(m.created_at).toLocaleDateString('id-ID') : '-'
-      ];
-    });
-    const csvContent = [headers.join(','), ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))].join('\n');
-    this.downloadFile(csvContent, `${filename}_kepka_detail.csv`, 'text/csv');
-  }
-
-  /**
-   * Export Mitra KEPKA Detail to Excel
-   */
-  exportKepkaDetailToExcel(data, filename) {
-    if (!data || data.length === 0) return;
-    const rows = data.map(m => {
-      const d = m.mitra_detail || {};
-      return {
-        'NIK': d.nik || '-',
-        'Nama Lengkap': d.nama_lengkap || '-',
-        'Email': d.email || '-',
-        'No Telp': d.no_telp || '-',
-        'Alamat': d.alamat || '-',
-        'Kota': d.kota || '-',
-        'Provinsi': d.provinsi || '-',
-        'Kabupaten': d.kabupaten || '-',
-        'Kecamatan': d.kecamatan || '-',
-        'Posisi': m.nama_pos || '-',
-        'Status': m.ket_status || '-',
-        'Pendidikan': d.pendidikan || '-',
-        'Pengalaman': d.pengalaman || '-',
-        'Tanggal Daftar': m.created_at ? new Date(m.created_at).toLocaleDateString('id-ID') : '-'
-      };
-    });
-    const ws = window.XLSX?.utils.json_to_sheet(rows);
-    if (!ws) return;
-    const wb = window.XLSX?.utils.book_new();
-    window.XLSX?.utils.book_append_sheet(wb, ws, 'Mitra KEPKA Detail');
-    window.XLSX?.writeFile(wb, `${filename}_kepka_detail.xlsx`);
-  }
-
-  /**
-   * Export Akun Mitra to CSV
-   */
-  exportAkunToCSV(data, filename) {
-    if (!data || data.length === 0) return;
-    const headers = ['Username', 'Email', 'Nama Lengkap', 'NIK', 'Status', 'Tanggal Daftar'];
-    const rows = data.map(m => [
-      m.username || '-',
-      m.email || '-',
-      m.nama_lengkap || '-',
-      m.nik || '-',
-      m.status === '1' ? 'Aktif' : 'Nonaktif',
-      m.created_at ? new Date(m.created_at).toLocaleDateString('id-ID') : '-'
-    ]);
-    const csvContent = [headers.join(','), ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))].join('\n');
-    this.downloadFile(csvContent, `${filename}_akun.csv`, 'text/csv');
-  }
-
-  /**
-   * Export Akun Mitra to Excel
-   */
-  exportAkunToExcel(data, filename) {
-    if (!data || data.length === 0) return;
-    const rows = data.map(m => ({
-      'Username': m.username || '-',
-      'Email': m.email || '-',
-      'Nama Lengkap': m.nama_lengkap || '-',
-      'NIK': m.nik || '-',
-      'Status': m.status === '1' ? 'Aktif' : 'Nonaktif',
-      'Tanggal Daftar': m.created_at ? new Date(m.created_at).toLocaleDateString('id-ID') : '-'
-    }));
-    const ws = window.XLSX?.utils.json_to_sheet(rows);
-    if (!ws) return;
-    const wb = window.XLSX?.utils.book_new();
-    window.XLSX?.utils.book_append_sheet(wb, ws, 'Akun Mitra');
-    window.XLSX?.writeFile(wb, `${filename}_akun.xlsx`);
-  }
-
-  /**
-   * Download file helper
-   */
-  downloadFile(content, filename, mimeType) {
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
   }
 
   /**

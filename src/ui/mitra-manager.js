@@ -5,7 +5,8 @@
 
 import { Logger } from '../core/logger.js';
 import { mitraService } from '../modules/mitra/index.js';
-import { TABLE_CONSTANTS } from '../constants.js';
+import { ExporterService } from '../modules/exporter/index.js';
+import { MITRA_DEFAULTS, TABLE_CONSTANTS } from '../constants.js';
 
 /** Escape HTML to prevent XSS */
 function esc(val) {
@@ -26,7 +27,7 @@ class MitraManager {
   get log() { return this.app.log.bind(this.app); }
 
   async loadMitraKepka() {
-    const tahun = this.elements.mitraTahunSelect?.value || '2026';
+    const tahun = this.elements.mitraTahunSelect?.value || MITRA_DEFAULTS.DEFAULT_YEAR;
     this.log(`📊 Memuat data Mitra KEPKA tahun ${tahun}...`, 'info');
     this.app.mitraKepkaData = await mitraService.getMitraKepka(tahun, mitraService.kdProv, mitraService.kdKab);
     if (this.app.mitraKepkaData.length > 0) {
@@ -115,7 +116,7 @@ class MitraManager {
   }
 
   async loadMitraHistory(idMitra) {
-    const tahun = this.elements.mitraTahunSelect?.value || '2026';
+    const tahun = this.elements.mitraTahunSelect?.value || MITRA_DEFAULTS.DEFAULT_YEAR;
     const history = await mitraService.getMitraHistory(idMitra, tahun);
     const tbody = this.elements.mitraHistoryTableBody;
     if (!tbody) return;
@@ -137,13 +138,13 @@ class MitraManager {
 
   downloadMitraKepkaCSV() {
     if (this.app.mitraKepkaData.length === 0) return;
-    mitraService.exportKepkaToCSV(this.app.mitraKepkaData, 'mitra_kepka');
+    ExporterService.exportMitraKepkaToCSV(this.app.mitraKepkaData, 'mitra_kepka');
     this.log('📥 Mitra KEPKA CSV downloaded', 'success');
   }
 
   downloadMitraKepkaExcel() {
     if (this.app.mitraKepkaData.length === 0) return;
-    mitraService.exportKepkaToExcel(this.app.mitraKepkaData, 'mitra_kepka');
+    ExporterService.exportMitraKepkaToExcel(this.app.mitraKepkaData, 'mitra_kepka');
     this.log('📥 Mitra KEPKA Excel downloaded', 'success');
   }
 
@@ -187,13 +188,13 @@ class MitraManager {
 
   downloadMitraScrapCSV() {
     if (this.app.mitraScrapData.length === 0) return;
-    mitraService.exportKepkaToCSV(this.app.mitraScrapData, 'mitra_scrap');
+    ExporterService.exportMitraKepkaToCSV(this.app.mitraScrapData, 'mitra_scrap');
     this.log('📥 Mitra Scrap CSV downloaded', 'success');
   }
 
   downloadMitraScrapExcel() {
     if (this.app.mitraScrapData.length === 0) return;
-    mitraService.exportKepkaToExcel(this.app.mitraScrapData, 'mitra_scrap');
+    ExporterService.exportMitraKepkaToExcel(this.app.mitraScrapData, 'mitra_scrap');
     this.log('📥 Mitra Scrap Excel downloaded', 'success');
   }
 
@@ -305,13 +306,13 @@ class MitraManager {
 
   downloadAkunMitraCSV() {
     if (mitraService.akunMitraData.length === 0) return;
-    mitraService.exportAkunToCSV(mitraService.akunMitraData, 'akun_mitra');
+    ExporterService.exportAkunToCSV(mitraService.akunMitraData, 'akun_mitra');
     this.log('📥 Akun Mitra CSV downloaded', 'success');
   }
 
   downloadAkunMitraExcel() {
     if (mitraService.akunMitraData.length === 0) return;
-    mitraService.exportAkunToExcel(mitraService.akunMitraData, 'akun_mitra');
+    ExporterService.exportAkunToExcel(mitraService.akunMitraData, 'akun_mitra');
     this.log('📥 Akun Mitra Excel downloaded', 'success');
   }
 
@@ -462,61 +463,9 @@ class MitraManager {
       if (progressDiv) progressDiv.style.display = 'none';
       return;
     }
-    if (format === 'csv') this._exportDetailToCSV(allDetail);
-    else this._exportDetailToExcel(allDetail);
+    if (format === 'csv') ExporterService.exportMitraFullDetailToCSV(allDetail);
+    else ExporterService.exportMitraFullDetailToExcel(allDetail);
     setTimeout(() => { if (progressDiv) progressDiv.style.display = 'none'; }, 3000);
-  }
-
-  _exportDetailToCSV(data) {
-    const headers = ['ID Mitra','NIK','Nama Lengkap','Email','Username','Status','No Telp','NPWP','Alamat','Provinsi','Kabupaten','Kecamatan','Desa','Tgl Lahir','Jenis Kelamin','Agama','Status Kawin','Pendidikan','Pekerjaan','Bank','No Rekening','Nama Rekening','Merk HP','Tipe HP','RAM HP','Sobat ID','Foto URL','Foto KTP URL'];
-    const rows = data.map(d => [
-      d.idmitra || '-',
-      `"${(d.nik || '-').replace(/"/g, '""')}"`,
-      `"${(d.nama_lengkap || '-').replace(/"/g, '""')}"`,
-      d.email || '-', d.username || '-', d.status || '-', d.no_telp || '-', d.npwp || '-',
-      `"${(d.alamat_detail || '-').replace(/"/g, '""')}"`,
-      d.alamat_prov || '-', d.alamat_kab || '-', d.alamat_kec || '-', d.alamat_desa || '-',
-      d.tgl_lahir || '-',
-      d.jns_kelamin === '1' ? 'Laki-laki' : d.jns_kelamin === '2' ? 'Perempuan' : '-',
-      d.agama || '-', d.status_kawin || '-', d.pendidikan || '-', d.pekerjaan || '-',
-      d.kd_bank || '-', d.rekening || '-',
-      `"${(d.rekening_nama || '-').replace(/"/g, '""')}"`,
-      d.merk_hp || '-', d.tipe_hp || '-', d.ram_hp || '-', d.sobat_id || '-',
-      d.foto || '-', d.foto_ktp || '-'
-    ]);
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `mitra_kepka_detail_${new Date().toISOString().slice(0,10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    this.log(`📥 Downloaded ${data.length} detail records as CSV`, 'success');
-  }
-
-  _exportDetailToExcel(data) {
-    if (!window.XLSX) {
-      this.log('❌ Library XLSX tidak tersedia', 'error');
-      return;
-    }
-    const rows = data.map(d => ({
-      'ID Mitra': d.idmitra || '-', 'NIK': d.nik || '-', 'Nama Lengkap': d.nama_lengkap || '-',
-      'Email': d.email || '-', 'Username': d.username || '-', 'Status': d.status || '-',
-      'No Telp': d.no_telp || '-', 'NPWP': d.npwp || '-', 'Alamat': d.alamat_detail || '-',
-      'Provinsi': d.alamat_prov || '-', 'Kabupaten': d.alamat_kab || '-', 'Kecamatan': d.alamat_kec || '-',
-      'Desa': d.alamat_desa || '-', 'Tgl Lahir': d.tgl_lahir || '-',
-      'Jenis Kelamin': d.jns_kelamin === '1' ? 'Laki-laki' : d.jns_kelamin === '2' ? 'Perempuan' : '-',
-      'Agama': d.agama || '-', 'Status Kawin': d.status_kawin || '-', 'Pendidikan': d.pendidikan || '-',
-      'Pekerjaan': d.pekerjaan || '-', 'Bank': d.kd_bank || '-', 'No Rekening': d.rekening || '-',
-      'Nama Rekening': d.rekening_nama || '-', 'Merk HP': d.merk_hp || '-', 'Tipe HP': d.tipe_hp || '-',
-      'RAM HP': d.ram_hp || '-', 'Sobat ID': d.sobat_id || '-', 'Foto URL': d.foto || '-', 'Foto KTP URL': d.foto_ktp || '-'
-    }));
-    const ws = window.XLSX.utils.json_to_sheet(rows);
-    const wb = window.XLSX.utils.book_new();
-    window.XLSX.utils.book_append_sheet(wb, ws, 'Mitra KEPKA Detail');
-    window.XLSX.writeFile(wb, `mitra_kepka_detail_${new Date().toISOString().slice(0,10)}.xlsx`);
-    this.log(`📥 Downloaded ${data.length} detail records as Excel`, 'success');
   }
 
   async loadMitraSurveiList() {

@@ -52,7 +52,7 @@ export const STORAGE_KEYS = {
 
 // History Configuration
 export const HISTORY_CONFIG = {
-  TTL_MS: 10 * 60 * 1000, // 10 minutes
+  TTL_MS: 30 * 60 * 1000, // 30 minutes
   MAX_ITEMS: 50
 };
 
@@ -93,7 +93,7 @@ export const SURVEY_ROLES = [
 // Cookie Names to Check for Session
 export const SESSION_COOKIE_PATTERNS = ['session', 'token', 'xsrf', 'laravel'];
 
-// XSRF Token Cookie Name
+// XSRF Token Cookie Name (Laravel default)
 export const XSRF_TOKEN_COOKIE = 'XSRF-TOKEN';
 
 // Domain for Cookies
@@ -156,7 +156,7 @@ export const RETRY_CONFIG = {
 
 // Time Constants (milliseconds)
 export const TIME_CONSTANTS = {
-  HISTORY_TTL_MS: HISTORY_CONFIG.TTL_MS, // Reuse HISTORY_CONFIG.TTL_MS
+  HISTORY_TTL_MS: 30 * 60 * 1000, // 30 minutes (match HISTORY_CONFIG.TTL_MS)
   HISTORY_COUNTDOWN_CHECK_MS: 1000, // 1 second
   SESSION_CHECK_DELAY_MS: 1500, // 1.5 seconds
   JWT_STATUS_CHECK_DELAY_MS: 1000, // 1 second

@@ -4,6 +4,7 @@
   "version": "5.1.0",
   "description": "Automasi data extraction dan manajemen mitra BPS",
   "permissions": [
+    "alarms",
     "cookies",
     "storage",
     "tabs"
